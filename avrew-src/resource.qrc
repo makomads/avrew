@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>translation_ja.qm</file>
+        <file>device.xml</file>
+        <file>icon1.ico</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,52 @@
+﻿IDI_ICON1   ICON    DISCARDABLE "icon1.ico"
+
+#include <windows.h>
+#include "version.h"
+
+
+
+
+#define VER_FILEVERSION             VER_PRODUCTVERSION
+#define VER_FILEVERSION_STR         VER_PRODUCTVERSION_STR
+
+
+
+#define VER_COMPANYNAME_STR         "Makoma Digital Serivice"
+#define VER_PRODUCTNAME_STR         "AVREW"
+
+#define VER_FILEDESCRIPTION_STR     VER_PRODUCTNAME_STR
+#define VER_INTERNALNAME_STR        VER_PRODUCTNAME_STR
+#define VER_LEGALCOPYRIGHT_STR      "Copyright (c) Makoma Digital Service"
+#define VER_LEGALTRADEMARKS1_STR    "All Rights Reserved"
+#define VER_LEGALTRADEMARKS2_STR    VER_LEGALTRADEMARKS1_STR
+#define VER_ORIGINALFILENAME_STR    "avrew.exe"
+
+#define VER_COMPANYDOMAIN_STR       "https://twitter.com/makomads"
+
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     VER_FILEVERSION
+PRODUCTVERSION  VER_PRODUCTVERSION
+BEGIN
+BLOCK "StringFileInfo"
+BEGIN
+BLOCK "040904E4"
+BEGIN
+VALUE "CompanyName",        VER_COMPANYNAME_STR
+VALUE "FileDescription",    VER_FILEDESCRIPTION_STR
+VALUE "FileVersion",        VER_FILEVERSION_STR
+VALUE "InternalName",       VER_INTERNALNAME_STR
+VALUE "LegalCopyright",     VER_LEGALCOPYRIGHT_STR
+VALUE "LegalTrademarks1",   VER_LEGALTRADEMARKS1_STR
+VALUE "LegalTrademarks2",   VER_LEGALTRADEMARKS2_STR
+VALUE "OriginalFilename",   VER_ORIGINALFILENAME_STR
+VALUE "ProductName",        VER_PRODUCTNAME_STR
+VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
+END
+END
+
+BLOCK "VarFileInfo"
+BEGIN
+VALUE "Translation", 0x411, 932
+END
+END
