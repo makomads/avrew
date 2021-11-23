@@ -75,7 +75,7 @@
       message="RESETが無効になっています。この設定では書き込めません。" />
   </device>
 
-  <device name="ATmega88PA" signature="1E930F" inherit="ATmega88">
+  <device name="ATmega88PA" signature="1E930F" base="ATmega88">
   </device>
 
 

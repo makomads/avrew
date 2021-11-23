@@ -13,7 +13,6 @@
 #include "ui_mainwindow.h"
 #include "intelhex.h"
 #include "functionbutton.h"
-#include "simplecrypt.h"
 #include "versiondialog.h"
 #include "version.h"
 
@@ -43,95 +42,36 @@ MainWindow::MainWindow(QWidget *parent) :
     int i,j;
     int row;
     QString a;
-
-
-
-    QFileInfo keyfileinfo = QFileInfo(QApplication::applicationDirPath(), "license.key");
-
-#ifdef QT_DEBUG
-    {
-        //ライセンスキー作成
-        SimpleCrypt crypto(0x1E910A1E950F); //tiny2313 + mega328p signatures
-        crypto.setCompressionMode(SimpleCrypt::CompressionNever); //always compress the data, see section below
-        crypto.setIntegrityProtectionMode(SimpleCrypt::ProtectionNone); //properly protect the integrity of the data
-        QBuffer buffer;
-        buffer.open(QIODevice::WriteOnly);
-        QDataStream s(&buffer);
-        //stream the data into our buffer
-        s.setVersion(QDataStream::Qt_5_5);
-
-        s << QString("AVREW");
-        s << QDateTime::currentDateTime().toString("yyyyMMdd");
-        s << QString("1");
-		s << QString("2147483647");
-
-        /*
-        s << QString("AVREW Free Edition");
-        s << QDateTime::currentDateTime().toString("yyyyMMdd");
-        s << QString("1");
-        s << QString("512");
-        */
-        QByteArray myCypherText = crypto.encryptToByteArray(buffer.data());
-        if (crypto.lastError() == SimpleCrypt::ErrorNoError) {
-          // do something relevant with the cyphertext, such as storing it or sending it over a socket to another machine.
-        }
-        buffer.close();
-        //ダミーデータを追加する(SimpleCrypt::ProtectionNoneを指定すること)
-        qsrand( QTime::currentTime().msec() );
-        while(myCypherText.length()<256)
-            myCypherText.append(qrand() % 256);
-
-        //ファイル書き込み
-/*
-        QFile file(keyfileinfo.absoluteFilePath());
-        file.open(QIODevice::WriteOnly);
-        file.write(myCypherText);
-        file.close();
-		*/
-
-    }
-#endif
-
-	//ライセンスキーがあるか
-    if(!keyfileinfo.exists()){
-		keyfileinfo = QFileInfo(QApplication::applicationDirPath(), "license_free.key");
-		if(!keyfileinfo.exists()){
-			QMessageBox::critical(NULL, "AVREW", tr("tr_err_invalid_license"));
-			qApp->exit(-1);
-			return;
-		}
-	}
-
-	//ライセンスキー読み込み
-	QFile file(keyfileinfo.absoluteFilePath());
-	file.open(QIODevice::ReadOnly);
-	QByteArray myCypherText =  file.readAll();
-	file.close();
-
-	SimpleCrypt crypto(0x1E910A1E950F);
     QString licensevalue;
-	QByteArray plaintext = crypto.decryptToByteArray(myCypherText);
-	if (!crypto.lastError() == SimpleCrypt::ErrorNoError) {
-	  // check why we have an error, use the error code from crypto.lastError() for that
-	//return;
-	}
-	else{
-		QBuffer buffer2(&plaintext);
-		buffer2.open(QIODevice::ReadOnly);
-		QDataStream s2(&buffer2);
-		s2.setVersion(QDataStream::Qt_5_5);
+    QFileInfo fileinfo;
 
-        s2 >> licensevalue;
-        licensehash.insert("appname", licensevalue);
-        s2 >> licensevalue;
-        licensehash.insert("date", licensevalue);
-        s2 >> licensevalue;
-        licensehash.insert("version", licensevalue);
-        s2 >> licensevalue;
-        licensehash.insert("limit", licensevalue);
+    //ライセンスキー作成
+    //現在はハードコーディングだが、将来有料版を作るときにはここで処理する
+    QBuffer buffer;
+    buffer.open(QIODevice::ReadWrite);
+    QDataStream ds(&buffer);
+    ds.setVersion(QDataStream::Qt_5_5);
+    ds << QString("AVREW Free Edition");
+    ds << QDateTime::currentDateTime().toString("yyyyMMdd");
+    ds << QString("1");
+    ds << QString("2147483647");
+    buffer.close();
 
-		buffer2.close();
-	}
+    //ライセンスキー読み込み
+    QByteArray plaindata = buffer.data();
+    QBuffer buffer2(&plaindata);
+    buffer2.open(QIODevice::ReadOnly);
+    QDataStream ds2(&buffer2);
+    ds2.setVersion(QDataStream::Qt_5_5);
+    ds2 >> licensevalue;
+    licensehash.insert("appname", licensevalue);
+    ds2 >> licensevalue;
+    licensehash.insert("date", licensevalue);
+    ds2 >> licensevalue;
+    licensehash.insert("version", licensevalue);
+    ds2 >> licensevalue;
+    licensehash.insert("limit", licensevalue);
+    buffer2.close();
 
     if(!licensehash.contains("appname")){
         QMessageBox::critical(NULL, "AVREW", tr("tr_err_invalid_license"));
@@ -139,10 +79,9 @@ MainWindow::MainWindow(QWidget *parent) :
         return;
     }
 
-
+    //ライセンスキーからタイトル設定
     ui->setupUi(this);
     setWindowTitle(licensehash.value("appname"));
-
 
     //ウィジェットをカスタムに置き換え
     QTextEdit *e = ui->edtConsole;
@@ -203,7 +142,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	pinreadtimer = new QTimer(this);
 
     //デバイス情報読み込み
-    if(!devinfo->openFile("device.xml", &a, &i)){
+    fileinfo = QFileInfo(QApplication::applicationDirPath(), "device.xml");
+    if(!devinfo->openFile(fileinfo.absoluteFilePath(), &a, &i)){
         if(i<0){
             //XMLのエラーではなくファイルが見つからないとき
             devinfo->openFile(":/device.xml", &a, &i);
@@ -218,8 +158,8 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     //設定読み込み
-    QFileInfo stgfi = QFileInfo(QApplication::applicationDirPath(), "avrew.ini");
-	settingspath = stgfi.absoluteFilePath();
+    fileinfo = QFileInfo(QApplication::applicationDirPath(), "avrew.ini");
+    settingspath = fileinfo.absoluteFilePath();
 	QSettings stg(settingspath, QSettings::IniFormat);
     stg.beginGroup("gui");
     resize(stg.value("mainwindow.size", QSize(400,400)).toSize());

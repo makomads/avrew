@@ -22,7 +22,6 @@ SOURCES +=\
     deviceinfo.cpp \
     functionbutton.cpp \
     intelhex.cpp \
-    simplecrypt.cpp \
     versiondialog.cpp
 
 HEADERS  += mainwindow.h \
@@ -33,7 +32,6 @@ HEADERS  += mainwindow.h \
     deviceinfo.h \
     functionbutton.h \
     intelhex.h \
-    simplecrypt.h \
     version.h \
     versiondialog.h
 

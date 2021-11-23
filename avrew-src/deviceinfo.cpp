@@ -58,7 +58,9 @@ QStringList DeviceInfo::enumDevices()
 bool DeviceInfo::deviceSpec(QString signature, DeviceSpec* spec)
 {
     QDomElement elm;
-    QString inherit;
+    QString base;
+
+    *spec = DeviceSpec();
 
     //signatureが一致するエレメントを探す
     elm = firstChildElement(TOPLEVELTAG);
@@ -72,16 +74,16 @@ bool DeviceInfo::deviceSpec(QString signature, DeviceSpec* spec)
         return false;
 
     //継承があれば継承元を先に読む
-    inherit = elm.attribute("inherit");
-    if(inherit!=""){
-        readSpec(inherit, spec);
+    base = elm.attribute("base");
+    if(base!=""){
+        readSpec(base, spec);
     }
     //本来のデバイスを読む
     return readSpec(elm.attribute("name"), spec);
 }
 
 
-//inherit属性のための下位関数
+//継承属性のための下位関数
 bool DeviceInfo::readSpec(QString name, DeviceSpec *spec)
 {
     QDomElement elm;
@@ -205,63 +207,4 @@ NEXT_ELM:
     return 1;
 }
 
-/*
-//現在のヒューズがwarning、errorに該当するか調べ、
-//該当すればメッセージボックスを出す。該当しなければtrueを返す。
-//warningの時はメッセージボックスの返り値を返す。
-//errorの時は常にfalseを返す。
-bool FuseBits::inspect()
-{
-    QString elmname, pattern, message;
-    int i;
-    UDomElement *elm;
-    int targetfuse;
-    bool matched;
-
-    elm = findDevice(crtdevice);
-    if(!elm) return true;
-
-    elm = (UDomElement*)elm->getFirstChild();
-    while(elm){
-        if(elm->getNodeType()!=ELEMENT_NODE) goto NEXT_ELM;
-
-        elmname = tu(elm->getNodeName());
-        if(elmname=="warning" || elmname=="error"){
-            pattern = elm->getAttribute("pattern").data();
-            if(pattern.length()!=8) goto NEXT_ELM;
-
-            if(elm->getAttribute("fuse")=="low") targetfuse=FUSE_LOW;
-            else if(elm->getAttribute("fuse")=="high") targetfuse=FUSE_HIGH;
-            else if(elm->getAttribute("fuse")=="ext") targetfuse=FUSE_EXT;
-            else goto NEXT_ELM;
-
-            matched = true;
-            for(i=0; i<8; i++){
-                if( ( pattern.at(7-i)=='0' && bitstate[targetfuse][i]->isChecked() ) ||
-                    ( pattern.at(7-i)=='1' && !bitstate[targetfuse][i]->isChecked() ) ){
-                    matched = false;
-                    break;
-                }
-            }
-
-            if(matched){
-                message = tu(elm->getAttribute("message"));
-                if(elmname=="warning"){
-                    if( QMessageBox::warning(topLevelWidget(), "", message,
-                        QMessageBox::Yes, QMessageBox::No ) == QMessageBox::No )
-                        return false;
-                }
-                else{
-                    QMessageBox::critical(topLevelWidget(), "", message);
-                    return false;
-                }
-            }
-        }
-NEXT_ELM:
-        elm = (UDomElement*)elm->getNextSibling();
-    }
-
-    return true;
-}
-*/
 

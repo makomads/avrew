@@ -28,7 +28,6 @@ struct DeviceSpec
         nflashpages=0;
         eeppagesize=0;
         neeppages=0;
-        //fusedesc[FUSE_LOW];
     }
 };
 
