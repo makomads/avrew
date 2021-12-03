@@ -77,8 +77,8 @@ bool BridgeIO::openRS232C(const char* port, int bps)
 
     //タイムアウト時間
 	float usperbit = 1000000.0 / bps;
-	comto.ReadIntervalTimeout = 10; //文字間隔の最大待ち時間(ミリ秒)
-	comto.ReadTotalTimeoutMultiplier = 4; //文字数*multiplier + constantでReadFileの最大時間を決める
+	comto.ReadIntervalTimeout = 20; //文字間隔の最大待ち時間(ミリ秒)
+	comto.ReadTotalTimeoutMultiplier = 20; //文字数*multiplier + constantでReadFileの最大時間を決める
 	comto.ReadTotalTimeoutConstant = 200;//usperbit * 10 * 4 * 100000 /1000 ; //10bit=1frame * 4bytes=1command * multiplier
 
 	comto.WriteTotalTimeoutMultiplier = 20; //文字間隔の最大待ち時間
