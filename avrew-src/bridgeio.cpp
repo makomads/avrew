@@ -1,6 +1,8 @@
 ﻿#include "bridgeio.h"
 #include <stdio.h>
 #include <windows.h>
+#pragma comment(lib, "winmm.lib")
+
 
 
 BridgeIO::BridgeIO()
@@ -16,6 +18,7 @@ BridgeIO::BridgeIO()
 
 BridgeIO::~BridgeIO()
 {
+
 }
 
 bool BridgeIO::openRS232C(const char* port, int bps)
@@ -23,6 +26,7 @@ bool BridgeIO::openRS232C(const char* port, int bps)
     DCB dcb;
     COMMTIMEOUTS comto;
 	wchar_t comportw[100];
+	int timeout;
 
     if(hcom != INVALID_HANDLE_VALUE && hcom != NULL){
         return true;
@@ -51,6 +55,7 @@ bool BridgeIO::openRS232C(const char* port, int bps)
     dcb.DCBlength = sizeof(DCB);
     memset(&dcb, 0, sizeof(DCB));
 	dcb.BaudRate = 9600;	//CH340の不具合?9600bpsで一度初期化しないとボーレートが有効にならない
+	//dcb.BaudRate = bitrate;
     dcb.fBinary = TRUE;
     dcb.ByteSize = 8;
     dcb.fParity = FALSE;
@@ -76,13 +81,21 @@ bool BridgeIO::openRS232C(const char* port, int bps)
 	SetCommState(hcom, &dcb);
 
     //タイムアウト時間
-	float usperbit = 1000000.0 / bps;
-	comto.ReadIntervalTimeout = 20; //文字間隔の最大待ち時間(ミリ秒)
-	comto.ReadTotalTimeoutMultiplier = 20; //文字数*multiplier + constantでReadFileの最大時間を決める
-	comto.ReadTotalTimeoutConstant = 200;//usperbit * 10 * 4 * 100000 /1000 ; //10bit=1frame * 4bytes=1command * multiplier
+	switch(bitrate){
+		case 115200:
+			timeout = 30; break;
+		case 14400:
+			timeout = 100; break;
+		case 1800:
+			timeout = 300; break;
+	}
 
-	comto.WriteTotalTimeoutMultiplier = 20; //文字間隔の最大待ち時間
-	comto.WriteTotalTimeoutConstant = 1000;//WriteFile全体の最大待ち時間
+	comto.ReadIntervalTimeout = 0; //文字間隔の最大待ち時間(ミリ秒) NT系では無効
+	comto.ReadTotalTimeoutMultiplier = 0; //文字数 NT系では無効
+	comto.ReadTotalTimeoutConstant = timeout;//ReadFileのタイムアウト時間
+
+	comto.WriteTotalTimeoutMultiplier = 0; //文字間隔の最大待ち時間 NT系では無効
+	comto.WriteTotalTimeoutConstant = timeout;//WriteFile全体の最大待ち時間
     if( !SetCommTimeouts(hcom, &comto) ){
 		errcode = COMERR_PORT;
         return false;
@@ -223,10 +236,17 @@ bool BridgeIO::send(unsigned char *buf, int outlen)
 	return true;
 }
 
+unsigned long g_eltime;
+
 int BridgeIO::receive(unsigned char *buf, int maxlen)
 {
 	DWORD readlen;
+
+	DWORD start = timeGetTime();
 	::ReadFile(hcom, buf, maxlen, &readlen, NULL);
+	DWORD end = timeGetTime();
+	g_eltime = end - start;
+
 
 	if(readlen!=maxlen){
 		errcode = COMERR_RECEIVE;

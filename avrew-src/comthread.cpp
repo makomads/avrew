@@ -461,6 +461,7 @@ bool ComThread::startTargetExecution(QObject *receiver)
 	continue_loop=true;
 	tgtsendbuf.clear();
 	tgtrecvbuf.clear();
+	io->clearBuffer();
 
 	wait();
 	start();

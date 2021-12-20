@@ -590,6 +590,8 @@ void MainWindow::on_cmbDevice_currentIndexChanged(int index)
 
 
 
+extern unsigned long g_eltime;
+
 //接続確認と識票の読み出し
 void MainWindow::on_btnTestConnection_clicked()
 {
@@ -607,6 +609,7 @@ void MainWindow::on_btnTestConnection_clicked()
 		//ブリッジバージョンを取得して接続確認
 		if(!thcom->bridgeVersion(&version)){
 			console->append(CONSTXT_ERROR, thcom->errorMessage());
+			//console->append(CONSTXT_APPMESSAGE, QString("eltime:%1").arg(g_eltime));
 			return;
 		}
 		console->append(CONSTXT_APPMESSAGE, QString("Bridge version:%1").arg(version));
@@ -637,6 +640,8 @@ void MainWindow::on_btnTestConnection_clicked()
             console->append(CONSTXT_ERROR, msg);
         }
     }
+
+	//console->append(CONSTXT_APPMESSAGE, QString("eltime:%1").arg(g_eltime));
 }
 
 
