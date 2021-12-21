@@ -39,7 +39,7 @@ bool BridgeIO::openRS232C(const char* port, int bps)
 
     hcom = CreateFile(
 		comportw, GENERIC_READ|GENERIC_WRITE,0,NULL,
-		OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL );
+		OPEN_EXISTING,/* FILE_ATTRIBUTE_NORMAL |*/ FILE_FLAG_OVERLAPPED,NULL );
     if(hcom == INVALID_HANDLE_VALUE){
 		errcode = COMERR_PORT;
         return false;
@@ -225,9 +225,15 @@ bool BridgeIO::send(unsigned char *buf, int outlen)
 	index = 0;
 	sendleft = sendlen;
 	while (sendleft > 0){
-		if(WriteFile(hcom, sendbuf+index, sendleft, &wlen, NULL)==FALSE){
+
+		OVERLAPPED ovlp;
+		memset(&ovlp, 0, sizeof(OVERLAPPED));
+		ovlp.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+
+		if(WriteFile(hcom, sendbuf+index, sendleft, &wlen, &ovlp)==FALSE){
 			errcode = COMERR_SEND;
-			return false;
+			//return false;
 		}
 		index += wlen;
 		sendleft -= wlen;
@@ -242,10 +248,19 @@ int BridgeIO::receive(unsigned char *buf, int maxlen)
 {
 	DWORD readlen;
 
-	DWORD start = timeGetTime();
-	::ReadFile(hcom, buf, maxlen, &readlen, NULL);
-	DWORD end = timeGetTime();
-	g_eltime = end - start;
+	OVERLAPPED ovlp;
+	memset(&ovlp, 0, sizeof(OVERLAPPED));
+
+	while(true){
+		DWORD start = timeGetTime();
+		::ReadFile(hcom, buf, maxlen, &readlen, &ovlp);
+		DWORD end = timeGetTime();
+		g_eltime = end - start;
+
+		if(readlen!=0)
+			break;
+		Sleep(10);
+	}
 
 
 	if(readlen!=maxlen){

@@ -50,6 +50,7 @@ volatile uint8_t txoutpos;
 volatile uint8_t spidelay;
 
 
+
 //外部割り込み1(INT1)
 //ソフトUART受信スタートビット検出
 ISR(INT1_vect)
@@ -437,7 +438,7 @@ TgtRest┃D5  B0┃B0
 			case 0xC1:
 			case 0xC3:
 				//flash/eeprom読み込み
-				if(txinpos == txoutpos){ //コマンドレスポンスを優先する
+				if(txinpos == txoutpos){ //コマンドレスポンスを優先する(txbufが空になってから読み込み開始)
 					do{
 						//ここではrxbufは受信用ではなくSPIのバッファとして使い回している
 						if(blkmodetype==0xC1)
