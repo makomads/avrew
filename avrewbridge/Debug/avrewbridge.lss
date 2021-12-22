@@ -7,29 +7,29 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   1 .data         00000000  00800060  00000078  00000650  2**0
                   ALLOC
-  2 .bss          00000017  00800060  00800060  000007e4  2**0
+  2 .bss          00000037  00800060  00800060  000007e4  2**0
                   ALLOC
   3 .comment      0000002f  00000000  00000000  000007e4  2**0
                   CONTENTS, READONLY
   4 .debug_aranges 00000040  00000000  00000000  00000813  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000a6e  00000000  00000000  00000853  2**0
+  5 .debug_info   00000a96  00000000  00000000  00000853  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00000503  00000000  00000000  000012c1  2**0
+  6 .debug_abbrev 00000503  00000000  00000000  000012e9  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000814  00000000  00000000  000017c4  2**0
+  7 .debug_line   00000814  00000000  00000000  000017ec  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  000000a8  00000000  00000000  00001fd8  2**2
+  8 .debug_frame  000000a8  00000000  00000000  00002000  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    00000163  00000000  00000000  00002080  2**0
+  9 .debug_str    00000163  00000000  00000000  000020a8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    000005c9  00000000  00000000  000021e3  2**0
+ 10 .debug_loc    000005c9  00000000  00000000  0000220b  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000030  00000000  00000000  000027ac  2**0
+ 11 .debug_ranges 00000030  00000000  00000000  000027d4  2**0
                   CONTENTS, READONLY, DEBUGGING
  12 .text         00000002  0000072e  0000072e  000007e2  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
- 13 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000027dc  2**2
+ 13 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00002804  2**2
                   CONTENTS, READONLY, DEBUGGING
  14 .text.__vector_2 00000030  000006fe  000006fe  000007b2  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
@@ -67,7 +67,7 @@ Disassembly of section .text:
 
 00000026 <.dinit>:
   26:	00 60       	ori	r16, 0x00	; 0
-  28:	00 77       	andi	r16, 0x70	; 112
+  28:	00 97       	sbiw	r24, 0x00	; 0
   2a:	80 00       	.word	0x0080	; ????
 
 0000002c <__ctors_end>:
@@ -139,7 +139,7 @@ ISR(INT1_vect)
  706:	11 24       	eor	r1, r1
  708:	8f 93       	push	r24
 	suarxbuf = 0;
- 70a:	10 92 64 00 	sts	0x0064, r1	; 0x800064 <suarxbuf>
+ 70a:	10 92 84 00 	sts	0x0084, r1	; 0x800084 <suarxbuf>
 	suarxbit = 0;
  70e:	10 92 60 00 	sts	0x0060, r1	; 0x800060 <__DATA_REGION_ORIGIN__>
 	
@@ -249,16 +249,16 @@ ISR(TIMER0_COMPA_vect)
 	//データビット
 	else{
 		suarxbuf >>= 1;
- 5fa:	90 91 64 00 	lds	r25, 0x0064	; 0x800064 <suarxbuf>
+ 5fa:	90 91 84 00 	lds	r25, 0x0084	; 0x800084 <suarxbuf>
  5fe:	96 95       	lsr	r25
- 600:	90 93 64 00 	sts	0x0064, r25	; 0x800064 <suarxbuf>
+ 600:	90 93 84 00 	sts	0x0084, r25	; 0x800084 <suarxbuf>
 		if(f_bitset){
  604:	88 23       	and	r24, r24
  606:	29 f0       	breq	.+10     	; 0x612 <__vector_13+0x76>
 			suarxbuf |= 0b10000000;
- 608:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <suarxbuf>
+ 608:	80 91 84 00 	lds	r24, 0x0084	; 0x800084 <suarxbuf>
  60c:	80 68       	ori	r24, 0x80	; 128
- 60e:	80 93 64 00 	sts	0x0064, r24	; 0x800064 <suarxbuf>
+ 60e:	80 93 84 00 	sts	0x0084, r24	; 0x800084 <suarxbuf>
 		}
 	}
 	
@@ -302,9 +302,9 @@ ISR(TIMER0_COMPA_vect)
 	//データビット
 	else{
 		suarxbuf >>= 1;
- 63a:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <suarxbuf>
+ 63a:	80 91 84 00 	lds	r24, 0x0084	; 0x800084 <suarxbuf>
  63e:	86 95       	lsr	r24
- 640:	80 93 64 00 	sts	0x0064, r24	; 0x800064 <suarxbuf>
+ 640:	80 93 84 00 	sts	0x0084, r24	; 0x800084 <suarxbuf>
  644:	e6 cf       	rjmp	.-52     	; 0x612 <__vector_13+0x76>
 		}
 	}
@@ -337,7 +337,7 @@ ISR(TIMER1_COMPA_vect)
  65e:	8f 93       	push	r24
 	//ストップビット
 	if(suatxbit==9){
- 660:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <suatxbit>
+ 660:	80 91 83 00 	lds	r24, 0x0083	; 0x800083 <suatxbit>
  664:	89 30       	cpi	r24, 0x09	; 9
  666:	11 f4       	brne	.+4      	; 0x66c <__vector_4+0x18>
 		sbi(PORTD,4);
@@ -346,7 +346,7 @@ ISR(TIMER1_COMPA_vect)
 	}
 	//送出完了
 	else if(suatxbit==10){
- 66c:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <suatxbit>
+ 66c:	80 91 83 00 	lds	r24, 0x0083	; 0x800083 <suatxbit>
  670:	8a 30       	cpi	r24, 0x0A	; 10
  672:	39 f4       	brne	.+14     	; 0x682 <__vector_4+0x2e>
 		//タイマ停止する
@@ -356,14 +356,14 @@ ISR(TIMER1_COMPA_vect)
  678:	8e bd       	out	0x2e, r24	; 46
 		suatxbit = -1;
  67a:	8f ef       	ldi	r24, 0xFF	; 255
- 67c:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <suatxbit>
+ 67c:	80 93 83 00 	sts	0x0083, r24	; 0x800083 <suatxbit>
 		return;
  680:	11 c0       	rjmp	.+34     	; 0x6a4 <__vector_4+0x50>
 	}
 	//データビット
 	else{
 		if(suatxbuf & 1)
- 682:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <suatxbuf>
+ 682:	80 91 81 00 	lds	r24, 0x0081	; 0x800081 <suatxbuf>
  686:	80 ff       	sbrs	r24, 0
  688:	02 c0       	rjmp	.+4      	; 0x68e <__vector_4+0x3a>
 			sbi(PORTD,4);
@@ -373,16 +373,16 @@ ISR(TIMER1_COMPA_vect)
 			cbi(PORTD,4);
  68e:	94 98       	cbi	0x12, 4	; 18
 		suatxbuf >>= 1;			
- 690:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <suatxbuf>
+ 690:	80 91 81 00 	lds	r24, 0x0081	; 0x800081 <suatxbuf>
  694:	86 95       	lsr	r24
- 696:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <suatxbuf>
+ 696:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <suatxbuf>
 	}
 	
 	//次のビットへ
 	suatxbit++;
- 69a:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <suatxbit>
+ 69a:	80 91 83 00 	lds	r24, 0x0083	; 0x800083 <suatxbit>
  69e:	8f 5f       	subi	r24, 0xFF	; 255
- 6a0:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <suatxbit>
+ 6a0:	80 93 83 00 	sts	0x0083, r24	; 0x800083 <suatxbit>
 }
  6a4:	8f 91       	pop	r24
  6a6:	0f 90       	pop	r0
@@ -434,7 +434,7 @@ void spi_exchange(uint8_t *poutdata, uint8_t *pindata)
 			sbi(PORTB, 4);
  6ce:	c4 9a       	sbi	0x18, 4	; 24
 			delaycnt = spidelay;
- 6d0:	90 91 66 00 	lds	r25, 0x0066	; 0x800066 <spidelay>
+ 6d0:	90 91 86 00 	lds	r25, 0x0086	; 0x800086 <spidelay>
 			while(delaycnt) delaycnt--;
  6d4:	99 23       	and	r25, r25
  6d6:	11 f0       	breq	.+4      	; 0x6dc <spi_exchange+0x2c>
@@ -452,7 +452,7 @@ void spi_exchange(uint8_t *poutdata, uint8_t *pindata)
 			cbi(PORTB, 4);
  6e2:	c4 98       	cbi	0x18, 4	; 24
 			delaycnt = spidelay;
- 6e4:	90 91 66 00 	lds	r25, 0x0066	; 0x800066 <spidelay>
+ 6e4:	90 91 86 00 	lds	r25, 0x0086	; 0x800086 <spidelay>
 			while(delaycnt) delaycnt--;
  6e8:	99 23       	and	r25, r25
  6ea:	11 f0       	breq	.+4      	; 0x6f0 <spi_exchange+0x40>
@@ -629,9 +629,9 @@ int main(void)
 	
 	//諸変数初期化
 	txinpos = 0;
-  d0:	10 92 62 00 	sts	0x0062, r1	; 0x800062 <txinpos>
+  d0:	10 92 82 00 	sts	0x0082, r1	; 0x800082 <txinpos>
 	txoutpos = 0;
-  d4:	10 92 65 00 	sts	0x0065, r1	; 0x800065 <txoutpos>
+  d4:	10 92 85 00 	sts	0x0085, r1	; 0x800085 <txoutpos>
 	rxpos = 0;
 	rxbuf[0] = 0x55;
   d8:	95 e5       	ldi	r25, 0x55	; 85
@@ -646,14 +646,14 @@ int main(void)
   de:	9f ef       	ldi	r25, 0xFF	; 255
   e0:	90 93 60 00 	sts	0x0060, r25	; 0x800060 <__DATA_REGION_ORIGIN__>
 	suatxbit = -1;
-  e4:	90 93 63 00 	sts	0x0063, r25	; 0x800063 <suatxbit>
+  e4:	90 93 83 00 	sts	0x0083, r25	; 0x800083 <suatxbit>
 	blkmodetype = 0;
 	cntblk = 0;
 	blkdatalen = 0;
 	blkaddr = 0;
 	uarterr = 0;
 	spidelay = 2;
-  e8:	80 93 66 00 	sts	0x0066, r24	; 0x800066 <spidelay>
+  e8:	80 93 86 00 	sts	0x0086, r24	; 0x800086 <spidelay>
 
 	//CPUプリスケーラ
 	//if(!(PIND & (1<<PIND6))){
@@ -775,8 +775,8 @@ int main(void)
 		
 		//ブリッジからホストへ送信
 		if(txinpos != txoutpos){
- 13c:	90 91 62 00 	lds	r25, 0x0062	; 0x800062 <txinpos>
- 140:	80 91 65 00 	lds	r24, 0x0065	; 0x800065 <txoutpos>
+ 13c:	90 91 82 00 	lds	r25, 0x0082	; 0x800082 <txinpos>
+ 140:	80 91 85 00 	lds	r24, 0x0085	; 0x800085 <txoutpos>
  144:	98 17       	cp	r25, r24
  146:	91 f0       	breq	.+36     	; 0x16c <__stack+0x8d>
 			//UART送信レジスタ空き待ちフラグ(UDRE)
@@ -786,19 +786,19 @@ int main(void)
 				//送信データセット
 				//同時に送信が開始され、UDREは解除される
 				UDR = txbuf[txoutpos++];
- 14c:	e0 91 65 00 	lds	r30, 0x0065	; 0x800065 <txoutpos>
+ 14c:	e0 91 85 00 	lds	r30, 0x0085	; 0x800085 <txoutpos>
  150:	81 e0       	ldi	r24, 0x01	; 1
  152:	8e 0f       	add	r24, r30
- 154:	80 93 65 00 	sts	0x0065, r24	; 0x800065 <txoutpos>
+ 154:	80 93 85 00 	sts	0x0085, r24	; 0x800085 <txoutpos>
  158:	f0 e0       	ldi	r31, 0x00	; 0
- 15a:	e9 59       	subi	r30, 0x99	; 153
+ 15a:	e9 57       	subi	r30, 0x79	; 121
  15c:	ff 4f       	sbci	r31, 0xFF	; 255
  15e:	80 81       	ld	r24, Z
  160:	8c b9       	out	0x0c, r24	; 12
 				txoutpos &= TXBUFMAXMASK; //if(txoutpos==TXBUFSIZE) txoutpos = 0;と同じ効果
- 162:	80 91 65 00 	lds	r24, 0x0065	; 0x800065 <txoutpos>
+ 162:	80 91 85 00 	lds	r24, 0x0085	; 0x800085 <txoutpos>
  166:	8f 70       	andi	r24, 0x0F	; 15
- 168:	80 93 65 00 	sts	0x0065, r24	; 0x800065 <txoutpos>
+ 168:	80 93 85 00 	sts	0x0085, r24	; 0x800085 <txoutpos>
 			}
 		}
 
@@ -811,39 +811,39 @@ int main(void)
 			suarxbit = -1;
  176:	90 92 60 00 	sts	0x0060, r9	; 0x800060 <__DATA_REGION_ORIGIN__>
 			txbuf[txinpos] = 0xFF;
- 17a:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 17a:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  17e:	f0 e0       	ldi	r31, 0x00	; 0
- 180:	e9 59       	subi	r30, 0x99	; 153
+ 180:	e9 57       	subi	r30, 0x79	; 121
  182:	ff 4f       	sbci	r31, 0xFF	; 255
  184:	90 82       	st	Z, r9
 			txbuf[txinpos+1] = 0xF2;
- 186:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 186:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  18a:	f0 e0       	ldi	r31, 0x00	; 0
- 18c:	e8 59       	subi	r30, 0x98	; 152
+ 18c:	e8 57       	subi	r30, 0x78	; 120
  18e:	ff 4f       	sbci	r31, 0xFF	; 255
  190:	82 ef       	ldi	r24, 0xF2	; 242
  192:	80 83       	st	Z, r24
 			txbuf[txinpos+2] = suarxbuf;
- 194:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 194:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  198:	f0 e0       	ldi	r31, 0x00	; 0
- 19a:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <suarxbuf>
- 19e:	e7 59       	subi	r30, 0x97	; 151
+ 19a:	80 91 84 00 	lds	r24, 0x0084	; 0x800084 <suarxbuf>
+ 19e:	e7 57       	subi	r30, 0x77	; 119
  1a0:	ff 4f       	sbci	r31, 0xFF	; 255
  1a2:	80 83       	st	Z, r24
 			txbuf[txinpos+3] = 0;
- 1a4:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 1a4:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  1a8:	f0 e0       	ldi	r31, 0x00	; 0
- 1aa:	e6 59       	subi	r30, 0x96	; 150
+ 1aa:	e6 57       	subi	r30, 0x76	; 118
  1ac:	ff 4f       	sbci	r31, 0xFF	; 255
  1ae:	10 82       	st	Z, r1
 			txinpos += 4;
- 1b0:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <txinpos>
+ 1b0:	80 91 82 00 	lds	r24, 0x0082	; 0x800082 <txinpos>
  1b4:	8c 5f       	subi	r24, 0xFC	; 252
- 1b6:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 1b6:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
 			txinpos &= TXBUFMAXMASK; //if(txinpos==TXBUFSIZE) txinpos = 0;と同じ効果
- 1ba:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <txinpos>
+ 1ba:	80 91 82 00 	lds	r24, 0x0082	; 0x800082 <txinpos>
  1be:	8f 70       	andi	r24, 0x0F	; 15
- 1c0:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 1c0:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
 
 		///////////////////////////////////////////////////////////////////////
 		//UART受信
@@ -926,8 +926,8 @@ int main(void)
 			case 0xC3:
 				//flash/eeprom読み込み
 				if(txinpos == txoutpos){ //コマンドレスポンスを優先する
- 222:	90 91 62 00 	lds	r25, 0x0062	; 0x800062 <txinpos>
- 226:	80 91 65 00 	lds	r24, 0x0065	; 0x800065 <txoutpos>
+ 222:	90 91 82 00 	lds	r25, 0x0082	; 0x800082 <txinpos>
+ 226:	80 91 85 00 	lds	r24, 0x0085	; 0x800085 <txoutpos>
  22a:	98 13       	cpse	r25, r24
  22c:	87 cf       	rjmp	.-242    	; 0x13c <__stack+0x5d>
 					do{
@@ -1028,45 +1028,45 @@ int main(void)
  294:	77 20       	and	r7, r7
  296:	81 f1       	breq	.+96     	; 0x2f8 <__stack+0x219>
 					txbuf[txinpos++] = uarterr;
- 298:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 298:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  29c:	81 e0       	ldi	r24, 0x01	; 1
  29e:	8e 0f       	add	r24, r30
- 2a0:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 2a0:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
  2a4:	f0 e0       	ldi	r31, 0x00	; 0
- 2a6:	e9 59       	subi	r30, 0x99	; 153
+ 2a6:	e9 57       	subi	r30, 0x79	; 121
  2a8:	ff 4f       	sbci	r31, 0xFF	; 255
  2aa:	70 82       	st	Z, r7
 					txbuf[txinpos++] = uarterr;
- 2ac:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 2ac:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  2b0:	81 e0       	ldi	r24, 0x01	; 1
  2b2:	8e 0f       	add	r24, r30
- 2b4:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 2b4:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
  2b8:	f0 e0       	ldi	r31, 0x00	; 0
- 2ba:	e9 59       	subi	r30, 0x99	; 153
+ 2ba:	e9 57       	subi	r30, 0x79	; 121
  2bc:	ff 4f       	sbci	r31, 0xFF	; 255
  2be:	70 82       	st	Z, r7
 					txbuf[txinpos++] = uarterr;
- 2c0:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 2c0:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  2c4:	81 e0       	ldi	r24, 0x01	; 1
  2c6:	8e 0f       	add	r24, r30
- 2c8:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 2c8:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
  2cc:	f0 e0       	ldi	r31, 0x00	; 0
- 2ce:	e9 59       	subi	r30, 0x99	; 153
+ 2ce:	e9 57       	subi	r30, 0x79	; 121
  2d0:	ff 4f       	sbci	r31, 0xFF	; 255
  2d2:	70 82       	st	Z, r7
 					txbuf[txinpos++] = uarterr;
- 2d4:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 2d4:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  2d8:	81 e0       	ldi	r24, 0x01	; 1
  2da:	8e 0f       	add	r24, r30
- 2dc:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 2dc:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
  2e0:	f0 e0       	ldi	r31, 0x00	; 0
- 2e2:	e9 59       	subi	r30, 0x99	; 153
+ 2e2:	e9 57       	subi	r30, 0x79	; 121
  2e4:	ff 4f       	sbci	r31, 0xFF	; 255
  2e6:	70 82       	st	Z, r7
 					txinpos &= TXBUFMAXMASK;
- 2e8:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <txinpos>
+ 2e8:	80 91 82 00 	lds	r24, 0x0082	; 0x800082 <txinpos>
  2ec:	8f 70       	andi	r24, 0x0F	; 15
- 2ee:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 2ee:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
  2f2:	10 2f       	mov	r17, r16
 				rxbuf[rxpos++] = UDR;
 			}
@@ -1101,49 +1101,49 @@ int main(void)
  30c:	01 96       	adiw	r24, 0x01	; 1
  30e:	d0 d1       	rcall	.+928    	; 0x6b0 <spi_exchange>
 					txbuf[txinpos++] = 0x6F;
- 310:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 310:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  314:	81 e0       	ldi	r24, 0x01	; 1
  316:	8e 0f       	add	r24, r30
- 318:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 318:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
  31c:	f0 e0       	ldi	r31, 0x00	; 0
- 31e:	e9 59       	subi	r30, 0x99	; 153
+ 31e:	e9 57       	subi	r30, 0x79	; 121
  320:	ff 4f       	sbci	r31, 0xFF	; 255
  322:	8f e6       	ldi	r24, 0x6F	; 111
  324:	80 83       	st	Z, r24
 					txbuf[txinpos++] = spiin[1];
- 326:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 326:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  32a:	81 e0       	ldi	r24, 0x01	; 1
  32c:	8e 0f       	add	r24, r30
- 32e:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 32e:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
  332:	f0 e0       	ldi	r31, 0x00	; 0
  334:	8e 81       	ldd	r24, Y+6	; 0x06
- 336:	e9 59       	subi	r30, 0x99	; 153
+ 336:	e9 57       	subi	r30, 0x79	; 121
  338:	ff 4f       	sbci	r31, 0xFF	; 255
  33a:	80 83       	st	Z, r24
 					txbuf[txinpos++] = spiin[2];
- 33c:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 33c:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  340:	81 e0       	ldi	r24, 0x01	; 1
  342:	8e 0f       	add	r24, r30
- 344:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 344:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
  348:	f0 e0       	ldi	r31, 0x00	; 0
  34a:	8f 81       	ldd	r24, Y+7	; 0x07
- 34c:	e9 59       	subi	r30, 0x99	; 153
+ 34c:	e9 57       	subi	r30, 0x79	; 121
  34e:	ff 4f       	sbci	r31, 0xFF	; 255
  350:	80 83       	st	Z, r24
 					txbuf[txinpos++] = spiin[3];
- 352:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 352:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  356:	81 e0       	ldi	r24, 0x01	; 1
  358:	8e 0f       	add	r24, r30
- 35a:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 35a:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
  35e:	f0 e0       	ldi	r31, 0x00	; 0
  360:	88 85       	ldd	r24, Y+8	; 0x08
- 362:	e9 59       	subi	r30, 0x99	; 153
+ 362:	e9 57       	subi	r30, 0x79	; 121
  364:	ff 4f       	sbci	r31, 0xFF	; 255
  366:	80 83       	st	Z, r24
 					txinpos &= TXBUFMAXMASK; //if(txinpos==TXBUFSIZE) txinpos = 0;
- 368:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <txinpos>
+ 368:	80 91 82 00 	lds	r24, 0x0082	; 0x800082 <txinpos>
  36c:	8f 70       	andi	r24, 0x0F	; 15
- 36e:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 36e:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
  372:	10 2f       	mov	r17, r16
 				rxbuf[rxpos++] = UDR;
 			}
@@ -1419,7 +1419,7 @@ int main(void)
 					case 0xF1:
 						//ホストからターゲットへソフトUARTでデータ送信
 						if(suatxbit != -1){
- 466:	90 91 63 00 	lds	r25, 0x0063	; 0x800063 <suatxbit>
+ 466:	90 91 83 00 	lds	r25, 0x0083	; 0x800083 <suatxbit>
  46a:	9f 3f       	cpi	r25, 0xFF	; 255
  46c:	09 f0       	breq	.+2      	; 0x470 <__LOCK_REGION_LENGTH__+0x70>
  46e:	62 c0       	rjmp	.+196    	; 0x534 <__LOCK_REGION_LENGTH__+0x134>
@@ -1429,7 +1429,7 @@ int main(void)
 						else{
 							suatxbuf = rxbuf[2];
  470:	9b 81       	ldd	r25, Y+3	; 0x03
- 472:	90 93 61 00 	sts	0x0061, r25	; 0x800061 <suatxbuf>
+ 472:	90 93 81 00 	sts	0x0081, r25	; 0x800081 <suatxbuf>
 							//タイマを開始
 							TCNT1 = 0;
  476:	1d bc       	out	0x2d, r1	; 45
@@ -1442,7 +1442,7 @@ int main(void)
 							cbi(PORTD,4);
  480:	94 98       	cbi	0x12, 4	; 18
 							suatxbit = 1;
- 482:	30 92 63 00 	sts	0x0063, r3	; 0x800063 <suatxbit>
+ 482:	30 92 83 00 	sts	0x0083, r3	; 0x800083 <suatxbit>
  486:	10 2f       	mov	r17, r16
  488:	01 c0       	rjmp	.+2      	; 0x48c <__LOCK_REGION_LENGTH__+0x8c>
 					cmdresp[1] = rxbuf[1];
@@ -1466,45 +1466,45 @@ int main(void)
  496:	20 2f       	mov	r18, r16
  498:	90 2f       	mov	r25, r16
 						txbuf[txinpos++] = cmdresp[0];
- 49a:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 49a:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  49e:	31 e0       	ldi	r19, 0x01	; 1
  4a0:	3e 0f       	add	r19, r30
- 4a2:	30 93 62 00 	sts	0x0062, r19	; 0x800062 <txinpos>
+ 4a2:	30 93 82 00 	sts	0x0082, r19	; 0x800082 <txinpos>
  4a6:	f0 e0       	ldi	r31, 0x00	; 0
- 4a8:	e9 59       	subi	r30, 0x99	; 153
+ 4a8:	e9 57       	subi	r30, 0x79	; 121
  4aa:	ff 4f       	sbci	r31, 0xFF	; 255
  4ac:	90 82       	st	Z, r9
 						txbuf[txinpos++] = cmdresp[1];
- 4ae:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 4ae:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  4b2:	31 e0       	ldi	r19, 0x01	; 1
  4b4:	3e 0f       	add	r19, r30
- 4b6:	30 93 62 00 	sts	0x0062, r19	; 0x800062 <txinpos>
+ 4b6:	30 93 82 00 	sts	0x0082, r19	; 0x800082 <txinpos>
  4ba:	f0 e0       	ldi	r31, 0x00	; 0
- 4bc:	e9 59       	subi	r30, 0x99	; 153
+ 4bc:	e9 57       	subi	r30, 0x79	; 121
  4be:	ff 4f       	sbci	r31, 0xFF	; 255
  4c0:	80 83       	st	Z, r24
 						txbuf[txinpos++] = cmdresp[2];
- 4c2:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 4c2:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  4c6:	81 e0       	ldi	r24, 0x01	; 1
  4c8:	8e 0f       	add	r24, r30
- 4ca:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 4ca:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
  4ce:	f0 e0       	ldi	r31, 0x00	; 0
- 4d0:	e9 59       	subi	r30, 0x99	; 153
+ 4d0:	e9 57       	subi	r30, 0x79	; 121
  4d2:	ff 4f       	sbci	r31, 0xFF	; 255
  4d4:	90 83       	st	Z, r25
 						txbuf[txinpos++] = cmdresp[3];
- 4d6:	e0 91 62 00 	lds	r30, 0x0062	; 0x800062 <txinpos>
+ 4d6:	e0 91 82 00 	lds	r30, 0x0082	; 0x800082 <txinpos>
  4da:	81 e0       	ldi	r24, 0x01	; 1
  4dc:	8e 0f       	add	r24, r30
- 4de:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 4de:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
  4e2:	f0 e0       	ldi	r31, 0x00	; 0
- 4e4:	e9 59       	subi	r30, 0x99	; 153
+ 4e4:	e9 57       	subi	r30, 0x79	; 121
  4e6:	ff 4f       	sbci	r31, 0xFF	; 255
  4e8:	20 83       	st	Z, r18
 						txinpos &= TXBUFMAXMASK;
- 4ea:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <txinpos>
+ 4ea:	80 91 82 00 	lds	r24, 0x0082	; 0x800082 <txinpos>
  4ee:	8f 70       	andi	r24, 0x0F	; 15
- 4f0:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <txinpos>
+ 4f0:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <txinpos>
 				rxbuf[rxpos++] = UDR;
 			}
 #endif

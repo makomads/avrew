@@ -9,6 +9,7 @@ Allocating common symbols
 Common symbol       size              file
 
 suarxbit            0x1               main.o
+rbuf                0x20              main.o
 suatxbuf            0x1               main.o
 txinpos             0x1               main.o
 suatxbit            0x1               main.o
@@ -276,27 +277,28 @@ END GROUP
                 0x0000000000800060                _edata = .
                 [!provide]                        PROVIDE (__data_end, .)
 
-.bss            0x0000000000800060       0x17
+.bss            0x0000000000800060       0x37
                 [!provide]                        PROVIDE (__bss_start, .)
  *(COMMON)
- COMMON         0x0000000000800060       0x17 main.o
+ COMMON         0x0000000000800060       0x37 main.o
                 0x0000000000800060                suarxbit
-                0x0000000000800061                suatxbuf
-                0x0000000000800062                txinpos
-                0x0000000000800063                suatxbit
-                0x0000000000800064                suarxbuf
-                0x0000000000800065                txoutpos
-                0x0000000000800066                spidelay
-                0x0000000000800067                txbuf
+                0x0000000000800061                rbuf
+                0x0000000000800081                suatxbuf
+                0x0000000000800082                txinpos
+                0x0000000000800083                suatxbit
+                0x0000000000800084                suarxbuf
+                0x0000000000800085                txoutpos
+                0x0000000000800086                spidelay
+                0x0000000000800087                txbuf
                 [!provide]                        PROVIDE (__bss_end, .)
                 0x0000000000000078                __data_load_start = LOADADDR (.data)
                 0x0000000000000078                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0000000000800077        0x0
+.noinit         0x0000000000800097        0x0
                 [!provide]                        PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                        PROVIDE (__noinit_end, .)
-                0x0000000000800077                _end = .
+                0x0000000000800097                _end = .
 
 .eeprom         0x0000000000810000        0x0
  *(.eeprom*)
@@ -363,10 +365,10 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000      0xa6e
+.debug_info     0x0000000000000000      0xa96
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x0000000000000000      0x40e C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
- .debug_info    0x000000000000040e      0x660 main.o
+ .debug_info    0x000000000000040e      0x688 main.o
 
 .debug_abbrev   0x0000000000000000      0x503
  *(.debug_abbrev)
