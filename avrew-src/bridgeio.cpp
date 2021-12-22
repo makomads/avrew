@@ -220,8 +220,10 @@ bool BridgeIO::send(unsigned char *buf, int outlen)
 		else if(i%4==3) sendbuf[i] = 0xAA;  //0b10101010
 	}
 
+    //末尾に追加
 	memcpy(sendbuf+(sendlen-outlen), buf, outlen);
 
+    //送信
 	index = 0;
 	sendleft = sendlen;
 	while (sendleft > 0){
@@ -244,30 +246,26 @@ bool BridgeIO::send(unsigned char *buf, int outlen)
 
 unsigned long g_eltime;
 
-int BridgeIO::receive(unsigned char *buf, int maxlen)
+int BridgeIO::receive(unsigned char *buf, int reqlen)
 {
-	DWORD readlen;
+    DWORD pos=0, readlen=0;
+    int retrycount=10;
 
-	OVERLAPPED ovlp;
-	memset(&ovlp, 0, sizeof(OVERLAPPED));
-
-	while(true){
+    while(pos!=reqlen && retrycount!=0){
 		DWORD start = timeGetTime();
-		::ReadFile(hcom, buf, maxlen, &readlen, &ovlp);
+        ::ReadFile(hcom, &buf[pos], reqlen-pos, &readlen, NULL);
 		DWORD end = timeGetTime();
 		g_eltime = end - start;
 
-		if(readlen!=0)
-			break;
-		Sleep(10);
+        pos += readlen;
+        retrycount--;
 	}
 
-
-	if(readlen!=maxlen){
+    if(pos!=reqlen){
 		errcode = COMERR_RECEIVE;
 		return 0;
 	}
-	return maxlen;
+    return reqlen;
 }
 
 

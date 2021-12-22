@@ -172,9 +172,13 @@ void ComThread::runWriteAsync(QByteArray flashimg, QByteArray eepimg)
 	pimg = (unsigned char*)flashimg.data();
 	memset(pimg+orgimgsize, 0xFF, flashimg.size()-orgimgsize);
 
-	//連続データの長さ設定(上位、下位の順)
-	exchangeCommand(singlein, 0xFF, 0xCE,
-					(devspec->flashpagesize>>8) & 0xFF, devspec->flashpagesize&0xFF);
+    //ページサイズ設定(上位、下位の順)
+    addCommand(senddata, 0xFF, 0xCE, (devspec->flashpagesize>>8)&0xFF, devspec->flashpagesize&0xFF);
+    //ブロック数設定
+    addCommand(senddata, 0xFF, 0xCD, (npages>>8)&0xFF, npages&0xFF);
+    send((unsigned char*)senddata.data(), senddata.size());
+    recvdata = receiveCommandResp(2*4, false); //0xCE、0xCDの2コマンドの返信が返る
+    senddata.clear();
 
 	//書き込み
 	postProgressEvent(0, flashimg.size());
