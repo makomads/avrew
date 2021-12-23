@@ -46,8 +46,6 @@ volatile int8_t suatxbit;
 volatile uint8_t txbuf[TXBUFSIZE];
 volatile uint8_t txinpos;
 volatile uint8_t txoutpos;
-#define BLKSIZE 32
-volatile uint8_t blkbuf[BLKSIZE];
 volatile uint8_t spidelay;
 
 
@@ -153,7 +151,6 @@ void spi_exchange(uint8_t *poutdata, uint8_t *pindata)
 	uint8_t		indata;
 	uint8_t		delaycnt;
 
-	
 	bytecount = 4;
 	while(bytecount){
 		outdata = poutdata[4-bytecount];
@@ -169,7 +166,7 @@ void spi_exchange(uint8_t *poutdata, uint8_t *pindata)
 			//クロック上昇
 			sbi(PORTB, 4);
 			delaycnt = spidelay;
-			while(delaycnt) delaycnt--;
+			while(delaycnt) delaycnt--;//カウント1あたり3クロック=0.15us
 			//受信データ
 			indata <<= 1;
 			if(PIND & 0b00001000)
@@ -178,7 +175,7 @@ void spi_exchange(uint8_t *poutdata, uint8_t *pindata)
 			bitcount--;
 			cbi(PORTB, 4);
 			delaycnt = spidelay;
-			while(delaycnt) delaycnt--;
+			while(delaycnt) delaycnt--;	//カウント1あたり3クロック=0.15us
 		}
 		pindata[4-bytecount] = indata;
 		bytecount--;
@@ -218,11 +215,14 @@ uint8_t debugpos=0;
 
 int main(void) 
 {
+
 	uint8_t rxbuf[4];
 #define spibuf rxbuf	//union
 	uint8_t rxpos;
 	uint8_t cmdresp[4];
 	//uint8_t uarterr;
+	uint16_t cnttimeout;
+#define MAX_TIMEOUT 65535
 
 	//ブロック転送関連
 	uint8_t blkmodetype;
@@ -232,11 +232,15 @@ int main(void)
 	uint8_t blkwritepos;
 	uint16_t addr;			//アドレス
 	
+	#define BLKSIZE 32
+	volatile uint8_t blkbuf[BLKSIZE];
+	
 	//ページ関係
 	uint16_t pagesize;		//1ページのサイズ
 	uint16_t pagepos;		//ページ内の走査位置
 
 
+reset:
 	//マスター割り込み禁止
 	cli();
 
@@ -410,6 +414,7 @@ TgtRest┃D5  B0┃B0
 				if(UCSRA & 0b10000000){	//UART受信データがあるか
 					blkbuf[blkwritepos] = UDR;
 					blkwritepos++;
+					cnttimeout = MAX_TIMEOUT;
 				}
 				if(blkreadpos < blkwritepos){
 					//ページ設定
@@ -501,7 +506,7 @@ TgtRest┃D5  B0┃B0
 			}
 		}
 		//コマンド転送では4バイト単位で処理する
-		else if(blkmodetype==0){
+		else{	//blkmodetype==0
 			//UART受信完了待ち	
 #if _DEBUG
 			rxbuf[rxpos++] = DBGUDR;
@@ -514,6 +519,7 @@ TgtRest┃D5  B0┃B0
 				
 				//UDRを読むと自動的に受信完了フラグは消える
 				rxbuf[rxpos++] = UDR;
+				cnttimeout = MAX_TIMEOUT;
 			}
 #endif
 			//4バイト受信したら処理する
@@ -590,6 +596,10 @@ TgtRest┃D5  B0┃B0
 					case 20: //0x14
 						cmdresp[2] = VERSION;
 						break;
+					case 21:
+						//SPIディレイ設定
+						spidelay = rxbuf[2];
+						break;
 					case 0xC0:
 					case 0xC1:
 					case 0xC2:
@@ -651,6 +661,13 @@ TgtRest┃D5  B0┃B0
 				}
 			} //if(rxpos==4)
 		} // if(!blockmode)
+		
+		//4バイト受信できないときは受信バッファをリセットする
+		//ウォッチドッグタイマの代わり
+		cnttimeout--;
+		if(cnttimeout==0){
+			goto reset;
+		}
 		
 	}
 }

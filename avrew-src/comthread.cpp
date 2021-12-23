@@ -147,11 +147,9 @@ void ComThread::runWriteAsync(QByteArray flashimg, QByteArray eepimg)
 	ThreadEvent *ev = new ThreadEvent(operation);
 	int pos;
 	int realimgsize;
-	int pageaddr;
 	int npages;
 	int blocksize = 32;
 	int nblocks;
-	int writtenlen;
     QByteArray senddata, recvdata;
 	unsigned char in[4];
 
