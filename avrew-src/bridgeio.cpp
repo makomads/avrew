@@ -39,7 +39,7 @@ bool BridgeIO::openRS232C(const char* port, int bps)
 
     hcom = CreateFile(
 		comportw, GENERIC_READ|GENERIC_WRITE,0,NULL,
-		OPEN_EXISTING,/* FILE_ATTRIBUTE_NORMAL |*/ FILE_FLAG_OVERLAPPED,NULL );
+		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,NULL );
     if(hcom == INVALID_HANDLE_VALUE){
 		errcode = COMERR_PORT;
         return false;
@@ -83,7 +83,7 @@ bool BridgeIO::openRS232C(const char* port, int bps)
     //タイムアウト時間
 	switch(bitrate){
 		case 115200:
-			timeout = 30; break;
+			timeout = 10; break;
 		case 14400:
 			timeout = 100; break;
 		case 1800:
@@ -203,8 +203,8 @@ bool BridgeIO::send(unsigned char *buf, int outlen)
 	unsigned char sendbuf[4096];
 	int sendbufsize = (int)sizeof(sendbuf);
 	DWORD wlen;
-	char debugstr[10000], cmdstr[100];
-	debugstr[0]='\0';
+	//char debugstr[10000], cmdstr[100];
+	//debugstr[0]='\0';
 	int i;
 
 	//バッファサイズをブロック長の倍数になるよう合わせる
@@ -220,20 +220,15 @@ bool BridgeIO::send(unsigned char *buf, int outlen)
 		else if(i%4==3) sendbuf[i] = 0xAA;  //0b10101010
 	}
 
-    //末尾に追加
+	//末尾に追加
+	//先頭に追加するとブロック転送でパディングが書き込まれてしまう
 	memcpy(sendbuf+(sendlen-outlen), buf, outlen);
 
     //送信
 	index = 0;
 	sendleft = sendlen;
 	while (sendleft > 0){
-
-		OVERLAPPED ovlp;
-		memset(&ovlp, 0, sizeof(OVERLAPPED));
-		ovlp.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-
-		if(WriteFile(hcom, sendbuf+index, sendleft, &wlen, &ovlp)==FALSE){
+		if(WriteFile(hcom, sendbuf+index, sendleft, &wlen, NULL)==FALSE){
 			errcode = COMERR_SEND;
 			//return false;
 		}
@@ -249,7 +244,7 @@ unsigned long g_eltime;
 int BridgeIO::receive(unsigned char *buf, int reqlen)
 {
     DWORD pos=0, readlen=0;
-    int retrycount=10;
+	int retrycount=10;
 
     while(pos!=reqlen && retrycount!=0){
 		DWORD start = timeGetTime();

@@ -40,23 +40,28 @@ C_SRCS +=  \
 ../main.c
 
 
-PREPROCESSING_SRCS += 
+PREPROCESSING_SRCS +=  \
+../spi.s
 
 
 ASM_SRCS += 
 
 
 OBJS +=  \
-main.o
+main.o \
+spi.o
 
 OBJS_AS_ARGS +=  \
-main.o
+main.o \
+spi.o
 
 C_DEPS +=  \
-main.d
+main.d \
+spi.d
 
 C_DEPS_AS_ARGS +=  \
-main.d
+main.d \
+spi.d
 
 OUTPUT_FILE_PATH +=avrewbridge.elf
 
@@ -87,6 +92,13 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU Assembler
+./spi.o: .././spi.s
+	@echo Building file: $<
+	@echo Invoking: XC8 Assembler : 2.31
+	$(QUOTE)C:\Program Files\Microchip\xc8\v2.31\bin\xc8-cc.exe$(QUOTE) -mcpu=ATtiny2313  -mdfp="C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.8.332\xc8"  -Wa, -x assembler-with-cpp -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)" -Wa,-g   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
 
 
 

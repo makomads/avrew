@@ -21,8 +21,9 @@ enum ComIF{
 enum{
     COMOP_NULL=0,
     COMOP_WRITE=1,
-    COMOP_READFLASH=2,
-    COMOP_READEEPROM=3,
+	//COMOP_READFLASH=2,
+	//COMOP_READEEPROM=3,
+	COMOP_READ=4,
     COMOP_TARGETEXEC=5,
     COMOP_PROGRESS=100
 };
@@ -62,14 +63,13 @@ public:
     //スレッド系
     void run();
     bool startWrite(QObject *receiver, QByteArray flashimg, QByteArray eepimg);
-    bool startReadFlash(QObject *receiver);
-    bool startReadEEPROM(QObject *receiver);
+	bool startRead(QObject *receiver, int flashsize, int eepsize);
 	bool startTargetExecution(QObject *receiver);
 
     void runWriteAsync(QByteArray flashimg, QByteArray eepimg);
     void runWriteSPI(QByteArray flashimg, QByteArray eepimg);
-	void runReadAsync();
-	void runReadSPI();
+	void runReadAsync(int flashsize, int eepsize);
+	void runReadSPI(int flashsize, int eepsize);
 
 	void runReadFlash();
 	void runReadEEPROM();

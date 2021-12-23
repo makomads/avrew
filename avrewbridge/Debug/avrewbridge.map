@@ -8,8 +8,8 @@ c:/program files/microchip/xc8/v2.31/avr/bin/../lib/gcc/avr/5.4.0/avr25/tiny-sta
 Allocating common symbols
 Common symbol       size              file
 
+blkbuf              0x20              main.o
 suarxbit            0x1               main.o
-rbuf                0x20              main.o
 suatxbuf            0x1               main.o
 txinpos             0x1               main.o
 suatxbit            0x1               main.o
@@ -25,6 +25,9 @@ Discarded input sections
  .text          0x0000000000000000        0x0 main.o
  .data          0x0000000000000000        0x0 main.o
  .bss           0x0000000000000000        0x0 main.o
+ .text          0x0000000000000000        0x0 spi.o
+ .data          0x0000000000000000        0x0 spi.o
+ .bss           0x0000000000000000        0x0 spi.o
  .text          0x0000000000000000        0x0 c:/program files/microchip/xc8/v2.31/avr/bin/../lib/gcc/avr/5.4.0/avr25/tiny-stack/memx-const\libgcc.a(_exit.o)
  .data          0x0000000000000000        0x0 c:/program files/microchip/xc8/v2.31/avr/bin/../lib/gcc/avr/5.4.0/avr25/tiny-stack/memx-const\libgcc.a(_exit.o)
  .bss           0x0000000000000000        0x0 c:/program files/microchip/xc8/v2.31/avr/bin/../lib/gcc/avr/5.4.0/avr25/tiny-stack/memx-const\libgcc.a(_exit.o)
@@ -74,6 +77,7 @@ Linker script and memory map
 
 LOAD C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
 LOAD main.o
+LOAD spi.o
 START GROUP
 LOAD c:/program files/microchip/xc8/v2.31/avr/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25/tiny-stack/memx-const\libm.a
 END GROUP
@@ -281,8 +285,8 @@ END GROUP
                 [!provide]                        PROVIDE (__bss_start, .)
  *(COMMON)
  COMMON         0x0000000000800060       0x37 main.o
-                0x0000000000800060                suarxbit
-                0x0000000000800061                rbuf
+                0x0000000000800060                blkbuf
+                0x0000000000800080                suarxbit
                 0x0000000000800081                suatxbuf
                 0x0000000000800082                txinpos
                 0x0000000000800083                suatxbit
@@ -365,20 +369,20 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000      0xa96
+.debug_info     0x0000000000000000      0xb98
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x0000000000000000      0x40e C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
- .debug_info    0x000000000000040e      0x688 main.o
+ .debug_info    0x000000000000040e      0x78a main.o
 
-.debug_abbrev   0x0000000000000000      0x503
+.debug_abbrev   0x0000000000000000      0x56b
  *(.debug_abbrev)
  .debug_abbrev  0x0000000000000000      0x3d7 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
- .debug_abbrev  0x00000000000003d7      0x12c main.o
+ .debug_abbrev  0x00000000000003d7      0x194 main.o
 
-.debug_line     0x0000000000000000      0x814
+.debug_line     0x0000000000000000      0x8bd
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x0000000000000000      0x104 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
- .debug_line    0x0000000000000104      0x710 main.o
+ .debug_line    0x0000000000000104      0x7b9 main.o
 
 .debug_frame    0x0000000000000000       0xa8
  *(.debug_frame)
@@ -389,9 +393,9 @@ END GROUP
  .debug_str     0x0000000000000000      0x163 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
  .debug_str     0x0000000000000163        0x0 main.o
 
-.debug_loc      0x0000000000000000      0x5c9
+.debug_loc      0x0000000000000000      0x50f
  *(.debug_loc)
- .debug_loc     0x0000000000000000      0x5c9 main.o
+ .debug_loc     0x0000000000000000      0x50f main.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -426,49 +430,49 @@ LOAD data_init
  .note.gnu.avr.deviceinfo
                 0x0000000000000000       0x40 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
 
-.text.main      0x0000000000000078      0x524
- .text.main     0x0000000000000078      0x524 main.o
+.text.main      0x0000000000000078      0x542
+ .text.main     0x0000000000000078      0x542 main.o
                 0x0000000000000078                main
 
 .text.__vector_13
-                0x000000000000059c       0xb8
+                0x00000000000005ba       0xb8
  .text.__vector_13
-                0x000000000000059c       0xb8 main.o
-                0x000000000000059c                __vector_13
+                0x00000000000005ba       0xb8 main.o
+                0x00000000000005ba                __vector_13
 
 .text.__vector_4
-                0x0000000000000654       0x5c
+                0x0000000000000672       0x5c
  .text.__vector_4
-                0x0000000000000654       0x5c main.o
-                0x0000000000000654                __vector_4
+                0x0000000000000672       0x5c main.o
+                0x0000000000000672                __vector_4
 
 .text.spi_exchange
-                0x00000000000006b0       0x4e
+                0x00000000000006ce       0x4e
  .text.spi_exchange
-                0x00000000000006b0       0x4e main.o
-                0x00000000000006b0                spi_exchange
+                0x00000000000006ce       0x4e main.o
+                0x00000000000006ce                spi_exchange
 
 .text.__vector_2
-                0x00000000000006fe       0x30
+                0x000000000000071c       0x30
  .text.__vector_2
-                0x00000000000006fe       0x30 main.o
-                0x00000000000006fe                __vector_2
+                0x000000000000071c       0x30 main.o
+                0x000000000000071c                __vector_2
 
-.text           0x000000000000072e        0x2
- .text          0x000000000000072e        0x2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
-                0x000000000000072e                __vector_1
-                0x000000000000072e                __vector_12
-                0x000000000000072e                __bad_interrupt
-                0x000000000000072e                __vector_6
-                0x000000000000072e                __vector_3
-                0x000000000000072e                __vector_11
-                0x000000000000072e                __vector_17
-                0x000000000000072e                __vector_7
-                0x000000000000072e                __vector_5
-                0x000000000000072e                __vector_9
-                0x000000000000072e                __vector_15
-                0x000000000000072e                __vector_8
-                0x000000000000072e                __vector_14
-                0x000000000000072e                __vector_10
-                0x000000000000072e                __vector_16
-                0x000000000000072e                __vector_18
+.text           0x000000000000074c        0x2
+ .text          0x000000000000074c        0x2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
+                0x000000000000074c                __vector_1
+                0x000000000000074c                __vector_12
+                0x000000000000074c                __bad_interrupt
+                0x000000000000074c                __vector_6
+                0x000000000000074c                __vector_3
+                0x000000000000074c                __vector_11
+                0x000000000000074c                __vector_17
+                0x000000000000074c                __vector_7
+                0x000000000000074c                __vector_5
+                0x000000000000074c                __vector_9
+                0x000000000000074c                __vector_15
+                0x000000000000074c                __vector_8
+                0x000000000000074c                __vector_14
+                0x000000000000074c                __vector_10
+                0x000000000000074c                __vector_16
+                0x000000000000074c                __vector_18
