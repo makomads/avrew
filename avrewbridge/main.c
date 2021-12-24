@@ -10,8 +10,7 @@
 
 //ボーレートを決めるための値
 //(CPUクロック/ビットレート)/(通常速16,倍速8) - 1
-#define UBRR_VAL 10	
-
+#define UBRR_VAL 10
 
 //ビット操作のマクロ定義
 #define	sbi(PORT,BIT) PORT |= _BV(BIT)	
@@ -323,7 +322,7 @@ TgtRest┃D5  B0┃B0
 	//2	パリティエラーフラグ
 	//1	倍速許可
 	//0	マルチプロセッサ許可
-	UCSRA = 0b00000000;
+	UCSRA = 0b00000010;
 	//7 受信完了割り込み許可
 	//6 送信完了割り込み許可
 	//5 送信レジスタ空き割り込み許可
@@ -468,6 +467,7 @@ TgtRest┃D5  B0┃B0
 					if(cntblk == nblks){
 						blkmodetype = 0;
 					}
+					cnttimeout = MAX_TIMEOUT;
 				}
 				break;
 			case 0xC1:
@@ -531,6 +531,7 @@ TgtRest┃D5  B0┃B0
 					//SPIでターゲットと4バイト交換する
 					spi_exchange(rxbuf, cmdresp);
 					cmdresp[0] = 0x6F;
+					cnttimeout = MAX_TIMEOUT;
 				}
 				//ブリッジコマンド
 				else{

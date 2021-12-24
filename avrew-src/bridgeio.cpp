@@ -82,6 +82,8 @@ bool BridgeIO::openRS232C(const char* port, int bps)
 
     //タイムアウト時間
 	switch(bitrate){
+		case 230400:
+			timeout = 10; break;
 		case 115200:
 			timeout = 10; break;
 		case 14400:

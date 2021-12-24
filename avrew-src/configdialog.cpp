@@ -12,7 +12,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->cmbSynchMode->addItem(tr("tr_async"),COMIF_ASYNC);
     ui->cmbSynchMode->addItem(tr("SPI"),COMIF_SPI);
 
-	int rates[] = {115200,14400,1800,0};
+	int rates[] = {230400, 115200,14400,1800,0};
     for(i=0; rates[i]!=0; i++){
         ui->cmbBaudRate->addItem(tr("%1").arg(rates[i]),rates[i]);
     }
