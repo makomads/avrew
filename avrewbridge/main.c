@@ -350,12 +350,14 @@ TgtRest┃D5  B0┃B0
 	txinpos = 0;
 	txoutpos = 0;
 	rxpos = 0;
+	/*
 	rxbuf[0] = 0x55;
 	rxbuf[1] = 0x55;
 	cmdresp[0] = 0xFF;
 	cmdresp[1] = 0;		//実行時はコマンド番号が入る
 	cmdresp[2] = 0;
 	cmdresp[3] = 0;
+	*/
 	suarxbit = -1;
 	suatxbit = -1;
 	blkmodetype = 0;
@@ -462,9 +464,9 @@ TgtRest┃D5  B0┃B0
 						//終了判定はページではなくブロックで行っている
 						//現時点(ver2)でAVRのROMサイズはいずれもブロックサイズ(32)の倍数なので問題ないと思われる
 						cntblk++;
-						if(cntblk == nblks){
-							blkmodetype = 0;
-						}
+					}
+					if(cntblk == nblks){
+						blkmodetype = 0;
 					}
 				}
 				break;
@@ -472,35 +474,35 @@ TgtRest┃D5  B0┃B0
 			case 0xC3:
 				//flash/eeprom連続読み込み
 				if(txinpos == txoutpos){ //コマンドレスポンスを優先する(txbufが空になってから読み込み開始)
-					do{
-						if(blkmodetype==0xC1)
-							spibuf[0] = (blkreadpos&1)==0? 0x20: 0x28;
-						else if(blkmodetype==0xC3)
-							spibuf[0] = 0xA0;
-						spibuf[1] = addr>>8;	//アドレス上位
-						spibuf[2] = addr&0xFF;	//アドレス下位
-						spibuf[3] = 0;
+					if(blkmodetype==0xC1)
+						spibuf[0] = (blkreadpos&1)==0? 0x20: 0x28;
+					else if(blkmodetype==0xC3)
+						spibuf[0] = 0xA0;
+					spibuf[1] = addr>>8;	//アドレス上位
+					spibuf[2] = addr&0xFF;	//アドレス下位
+					spibuf[3] = 0;
 						
-						//SPI
-						spi_exchange(spibuf, cmdresp);
-						//アドレスを進める
-						if( (blkmodetype==0xC1 && (blkreadpos&1)==1) || blkmodetype==0xC3){
-							addr++;
-						}
+					//SPI
+					spi_exchange(spibuf, cmdresp);
+					//アドレスを進める
+					if( (blkmodetype==0xC1 && (blkreadpos&1)==1) || blkmodetype==0xC3){
+						addr++;
+					}
 						
-						//読み込みはブロック単位ではないがカウンタとして使う
-						blkreadpos++;
-						if(blkreadpos==BLKSIZE){
-							cntblk++;
-							blkreadpos = 0;
-						}
+					//ホストへ戻し
+					while(bit_is_clear(UCSRA,UDRE));
+					UDR = cmdresp[3];
 						
-						//ホストへ戻し
-						while(bit_is_clear(UCSRA,UDRE));
-						UDR = cmdresp[3];
-						
-					}while(cntblk != nblks);
-					blkmodetype = 0;
+					//読み込みはブロック単位ではないがカウンタとして使う
+					blkreadpos++;
+					if(blkreadpos==BLKSIZE){
+						cntblk++;
+						blkreadpos = 0;
+					}
+					//終了判定
+					if(cntblk == nblks)
+						blkmodetype = 0;
+					cnttimeout = MAX_TIMEOUT;
 				}
 				break;
 			}
@@ -666,7 +668,8 @@ TgtRest┃D5  B0┃B0
 		//ウォッチドッグタイマの代わり
 		cnttimeout--;
 		if(cnttimeout==0){
-			goto reset;
+			rxpos = 0;
+			blkmodetype = 0;
 		}
 		
 	}
