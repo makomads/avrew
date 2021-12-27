@@ -8,14 +8,15 @@ c:/program files/microchip/xc8/v2.31/avr/bin/../lib/gcc/avr/5.4.0/avr25/tiny-sta
 Allocating common symbols
 Common symbol       size              file
 
+rxbuf               0x20              main.o
 suarxbit            0x1               main.o
 suatxbuf            0x1               main.o
-txinpos             0x1               main.o
+cnttimeout          0x2               main.o
 suatxbit            0x1               main.o
 suarxbuf            0x1               main.o
-txoutpos            0x1               main.o
+rxreadpos           0x1               main.o
 spidelay            0x1               main.o
-txbuf               0x10              main.o
+rxwritepos          0x1               main.o
 
 Discarded input sections
 
@@ -280,27 +281,28 @@ END GROUP
                 0x0000000000800060                _edata = .
                 [!provide]                        PROVIDE (__data_end, .)
 
-.bss            0x0000000000800060       0x17
+.bss            0x0000000000800060       0x29
                 [!provide]                        PROVIDE (__bss_start, .)
  *(COMMON)
- COMMON         0x0000000000800060       0x17 main.o
-                0x0000000000800060                suarxbit
-                0x0000000000800061                suatxbuf
-                0x0000000000800062                txinpos
-                0x0000000000800063                suatxbit
-                0x0000000000800064                suarxbuf
-                0x0000000000800065                txoutpos
-                0x0000000000800066                spidelay
-                0x0000000000800067                txbuf
+ COMMON         0x0000000000800060       0x29 main.o
+                0x0000000000800060                rxbuf
+                0x0000000000800080                suarxbit
+                0x0000000000800081                suatxbuf
+                0x0000000000800082                cnttimeout
+                0x0000000000800084                suatxbit
+                0x0000000000800085                suarxbuf
+                0x0000000000800086                rxreadpos
+                0x0000000000800087                spidelay
+                0x0000000000800088                rxwritepos
                 [!provide]                        PROVIDE (__bss_end, .)
                 0x0000000000000078                __data_load_start = LOADADDR (.data)
                 0x0000000000000078                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0000000000800077        0x0
+.noinit         0x0000000000800089        0x0
                 [!provide]                        PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                        PROVIDE (__noinit_end, .)
-                0x0000000000800077                _end = .
+                0x0000000000800089                _end = .
 
 .eeprom         0x0000000000810000        0x0
  *(.eeprom*)
@@ -359,18 +361,18 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x0000000000000000       0x40
+.debug_aranges  0x0000000000000000       0x48
  *(.debug_aranges)
  .debug_aranges
-                0x0000000000000000       0x40 main.o
+                0x0000000000000000       0x48 main.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000      0xbb7
+.debug_info     0x0000000000000000      0xb83
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x0000000000000000      0x40e C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
- .debug_info    0x000000000000040e      0x7a9 main.o
+ .debug_info    0x000000000000040e      0x775 main.o
 
 .debug_abbrev   0x0000000000000000      0x578
  *(.debug_abbrev)
@@ -382,18 +384,18 @@ END GROUP
  .debug_line    0x0000000000000000      0x104 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
  .debug_line    0x0000000000000104      0x7c3 main.o
 
-.debug_frame    0x0000000000000000       0xa8
+.debug_frame    0x0000000000000000       0xd8
  *(.debug_frame)
- .debug_frame   0x0000000000000000       0xa8 main.o
+ .debug_frame   0x0000000000000000       0xd8 main.o
 
 .debug_str      0x0000000000000000      0x163
  *(.debug_str)
  .debug_str     0x0000000000000000      0x163 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
  .debug_str     0x0000000000000163        0x0 main.o
 
-.debug_loc      0x0000000000000000      0x622
+.debug_loc      0x0000000000000000      0x524
  *(.debug_loc)
- .debug_loc     0x0000000000000000      0x622 main.o
+ .debug_loc     0x0000000000000000      0x524 main.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -413,9 +415,9 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x0000000000000000       0x30
+.debug_ranges   0x0000000000000000       0x38
  *(.debug_ranges)
- .debug_ranges  0x0000000000000000       0x30 main.o
+ .debug_ranges  0x0000000000000000       0x38 main.o
 
 .debug_macro
  *(.debug_macro)
@@ -428,49 +430,54 @@ LOAD data_init
  .note.gnu.avr.deviceinfo
                 0x0000000000000000       0x40 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
 
-.text.main      0x0000000000000078      0x576
- .text.main     0x0000000000000078      0x576 main.o
+.text.main      0x0000000000000078      0x554
+ .text.main     0x0000000000000078      0x554 main.o
                 0x0000000000000078                main
 
 .text.__vector_13
-                0x00000000000005ee       0xb8
+                0x00000000000005cc       0xb8
  .text.__vector_13
-                0x00000000000005ee       0xb8 main.o
-                0x00000000000005ee                __vector_13
+                0x00000000000005cc       0xb8 main.o
+                0x00000000000005cc                __vector_13
 
 .text.__vector_4
-                0x00000000000006a6       0x5c
+                0x0000000000000684       0x5c
  .text.__vector_4
-                0x00000000000006a6       0x5c main.o
-                0x00000000000006a6                __vector_4
+                0x0000000000000684       0x5c main.o
+                0x0000000000000684                __vector_4
 
 .text.spi_exchange
-                0x0000000000000702       0x4e
+                0x00000000000006e0       0x4e
  .text.spi_exchange
-                0x0000000000000702       0x4e main.o
-                0x0000000000000702                spi_exchange
+                0x00000000000006e0       0x4e main.o
+                0x00000000000006e0                spi_exchange
+
+.text.__vector_7
+                0x000000000000072e       0x46
+ .text.__vector_7
+                0x000000000000072e       0x46 main.o
+                0x000000000000072e                __vector_7
 
 .text.__vector_2
-                0x0000000000000750       0x30
+                0x0000000000000774       0x30
  .text.__vector_2
-                0x0000000000000750       0x30 main.o
-                0x0000000000000750                __vector_2
+                0x0000000000000774       0x30 main.o
+                0x0000000000000774                __vector_2
 
-.text           0x0000000000000780        0x2
- .text          0x0000000000000780        0x2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
-                0x0000000000000780                __vector_1
-                0x0000000000000780                __vector_12
-                0x0000000000000780                __bad_interrupt
-                0x0000000000000780                __vector_6
-                0x0000000000000780                __vector_3
-                0x0000000000000780                __vector_11
-                0x0000000000000780                __vector_17
-                0x0000000000000780                __vector_7
-                0x0000000000000780                __vector_5
-                0x0000000000000780                __vector_9
-                0x0000000000000780                __vector_15
-                0x0000000000000780                __vector_8
-                0x0000000000000780                __vector_14
-                0x0000000000000780                __vector_10
-                0x0000000000000780                __vector_16
-                0x0000000000000780                __vector_18
+.text           0x00000000000007a4        0x2
+ .text          0x00000000000007a4        0x2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.8.332/xc8/avr/lib/avr25/tiny-stack/memx-const/crtattiny2313.o
+                0x00000000000007a4                __vector_1
+                0x00000000000007a4                __vector_12
+                0x00000000000007a4                __bad_interrupt
+                0x00000000000007a4                __vector_6
+                0x00000000000007a4                __vector_3
+                0x00000000000007a4                __vector_11
+                0x00000000000007a4                __vector_17
+                0x00000000000007a4                __vector_5
+                0x00000000000007a4                __vector_9
+                0x00000000000007a4                __vector_15
+                0x00000000000007a4                __vector_8
+                0x00000000000007a4                __vector_14
+                0x00000000000007a4                __vector_10
+                0x00000000000007a4                __vector_16
+                0x00000000000007a4                __vector_18
