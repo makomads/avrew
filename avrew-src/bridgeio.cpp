@@ -71,14 +71,17 @@ bool BridgeIO::openRS232C(const char* port, int bps)
     // ソフトウェアフロー制御なし
     dcb.fOutX = FALSE;
     dcb.fInX = FALSE;
-    if(!SetCommState(hcom, &dcb)){  //SetCommState()関数にポートハンドルおよびdcb構造体のアドレスを代入する
+	if(!SetCommState(hcom, &dcb)){
 		 errcode = COMERR_PORT;
          return false;
     }
 
 	//本来のビットレートで設定し直す
 	dcb.BaudRate = bitrate;
-	SetCommState(hcom, &dcb);
+	if(!SetCommState(hcom, &dcb)){
+		 errcode = COMERR_PORT;
+		 return false;
+	}
 
     //タイムアウト時間
 	switch(bitrate){
@@ -90,6 +93,8 @@ bool BridgeIO::openRS232C(const char* port, int bps)
 			timeout = 100; break;
 		case 1800:
 			timeout = 300; break;
+		default:
+			timeout = 20; break;
 	}
 
 	comto.ReadIntervalTimeout = 0; //文字間隔の最大待ち時間(ミリ秒) NT系では無効

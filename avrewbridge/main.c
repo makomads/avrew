@@ -330,7 +330,7 @@ TgtRest┃D5  B0┃B0
 	//2	パリティエラーフラグ
 	//1	倍速許可
 	//0	マルチプロセッサ許可
-	UCSRA = 0b00000010;
+	UCSRA = 0b00000000;
 	//7 受信完了割り込み許可
 	//6 送信完了割り込み許可
 	//5 送信レジスタ空き割り込み許可
@@ -479,7 +479,7 @@ TgtRest┃D5  B0┃B0
 				//flash/eeprom連続読み込み
 				if(txwritepos == txreadpos){ //コマンドレスポンスを優先する(送信バッファが空になってから読み込み開始)
 					if(blkmodetype==0xC1)
-						spibuf[0] = (rxreadpos&1)==0? 0x20: 0x28;
+						spibuf[0] = (rxreadpos&1)==0? 0x20: 0x28; //rxreadposはインデックス代わり
 					else if(blkmodetype==0xC3)
 						spibuf[0] = 0xA0;
 					spibuf[1] = addr>>8;	//アドレス上位

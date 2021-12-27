@@ -644,8 +644,8 @@ reset:
 	//2	パリティエラーフラグ
 	//1	倍速許可
 	//0	マルチプロセッサ許可
-	UCSRA = 0b00000010;
-  c0:	8b b9       	out	0x0b, r24	; 11
+	UCSRA = 0b00000000;
+  c0:	1b b8       	out	0x0b, r1	; 11
 	//4	受信(RXD0pin)許可
 	//3	送信(TXD0pin)許可
 	//2	データビット長選択2
@@ -1075,7 +1075,7 @@ reset:
 					if(blkmodetype==0xC1)
  2d4:	01 3c       	cpi	r16, 0xC1	; 193
  2d6:	b1 f4       	brne	.+44     	; 0x304 <__stack+0x225>
-						spibuf[0] = (rxreadpos&1)==0? 0x20: 0x28;
+						spibuf[0] = (rxreadpos&1)==0? 0x20: 0x28; //rxreadposはインデックス代わり
  2d8:	80 91 86 00 	lds	r24, 0x0086	; 0x800086 <rxreadpos>
  2dc:	80 ff       	sbrs	r24, 0
  2de:	02 c0       	rjmp	.+4      	; 0x2e4 <__stack+0x205>
@@ -1110,7 +1110,7 @@ reset:
 				//flash/eeprom連続読み込み
 				if(txwritepos == txreadpos){ //コマンドレスポンスを優先する(送信バッファが空になってから読み込み開始)
 					if(blkmodetype==0xC1)
-						spibuf[0] = (rxreadpos&1)==0? 0x20: 0x28;
+						spibuf[0] = (rxreadpos&1)==0? 0x20: 0x28; //rxreadposはインデックス代わり
 					else if(blkmodetype==0xC3)
  304:	03 3c       	cpi	r16, 0xC3	; 195
  306:	09 f0       	breq	.+2      	; 0x30a <__stack+0x22b>
@@ -1615,7 +1615,7 @@ reset:
  5a8:	3f ce       	rjmp	.-898    	; 0x228 <__stack+0x149>
 				if(txwritepos == txreadpos){ //コマンドレスポンスを優先する(送信バッファが空になってから読み込み開始)
 					if(blkmodetype==0xC1)
-						spibuf[0] = (rxreadpos&1)==0? 0x20: 0x28;
+						spibuf[0] = (rxreadpos&1)==0? 0x20: 0x28; //rxreadposはインデックス代わり
 					else if(blkmodetype==0xC3)
 						spibuf[0] = 0xA0;
 					spibuf[1] = addr>>8;	//アドレス上位

@@ -247,17 +247,17 @@ void ComThread::runWriteSPI(QByteArray flashimg, QByteArray eepimg)
 {
 	ThreadEvent *ev;
 	int i,j,r=0;
-	int orgimgsize;
+	int realimgsize;
 	int npages;
 	int addr;
 	unsigned char out, in[4];
 	int cntunmatch=0;
 
 	//Flashイメージをページ境界になるよう拡張する
-	orgimgsize = flashimg.size();
+	realimgsize = flashimg.size();
 	npages = (flashimg.length() + devspec->flashpagesize-1) / devspec->flashpagesize;
 	flashimg.resize(npages * devspec->flashpagesize);
-	memset(flashimg.data()+orgimgsize, 0xFF, flashimg.size() - orgimgsize);
+	memset(flashimg.data()+realimgsize, 0xFF, flashimg.size() - realimgsize);
 
 	//消去
     if(!exchangeCommand(NULL, 0xAC, 0x80, 0, 0)){
@@ -286,10 +286,10 @@ void ComThread::runWriteSPI(QByteArray flashimg, QByteArray eepimg)
 
 	//EEPROM
 	if(cntunmatch==0 && eepimg.size()!=0){
-		orgimgsize = eepimg.size();
+		realimgsize = eepimg.size();
 		npages = (eepimg.length() + devspec->eeppagesize-1) / devspec->eeppagesize;
 		eepimg.resize(npages * devspec->eeppagesize);
-		memset(eepimg.data()+orgimgsize, 0xFF, eepimg.size() - orgimgsize);
+		memset(eepimg.data()+realimgsize, 0xFF, eepimg.size() - realimgsize);
 
 		//書き込み
 		postProgressEvent(0, eepimg.size());
@@ -308,7 +308,11 @@ void ComThread::runWriteSPI(QByteArray flashimg, QByteArray eepimg)
 	}
 
 	//完了
-	QApplication::postEvent(receiver, new ThreadEvent(operation, r, QString("")));
+	ev = new ThreadEvent(operation);
+	ev->setFinished(true);
+	ev->setParameter(flashimg, 0);
+	ev->setParameter(eepimg, 1);
+	QApplication::postEvent(receiver, ev);
 }
 
 
@@ -446,8 +450,7 @@ void ComThread::runReadSPI(int flashsize, int eepsize)
 	}
 
 	//完了イベント送出
-	ev = new ThreadEvent(operation);
-	ev->setReturnCode(i);
+	ev = new ThreadEvent(operation, 0, QString(""));
 	ev->setFinished(true);
 	ev->setParameter(flashimg, 0);
 	ev->setParameter(eepimg, 1);

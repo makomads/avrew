@@ -8,6 +8,7 @@
 #include <QTranslator>
 #include <QtGlobal>
 #include <QDateTime>
+#include <QMouseEvent>
 #include "mainwindow.h"
 #include "configdialog.h"
 #include "ui_mainwindow.h"
@@ -387,6 +388,16 @@ bool MainWindow::event(QEvent *event)
 										 e->parameter(0).toByteArray().size(),
 										 e->parameter(1).toByteArray().size());
                     }
+					else{
+						if(confighash.value("exectargetafterwriting").toBool()){
+							QMouseEvent* press = new QMouseEvent(QEvent::MouseButtonPress, ui->btnExecTarget->rect().center(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+							QMouseEvent* release = new QMouseEvent(QEvent::MouseButtonRelease, ui->btnExecTarget->rect().center(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+
+							QApplication::postEvent(ui->btnExecTarget, press);
+							QApplication::postEvent(ui->btnExecTarget, release);
+							//ui->btnExecTarget->toggle();
+						}
+					}
 				}
                 break;
 			case COMOP_READ:
@@ -422,6 +433,14 @@ bool MainWindow::event(QEvent *event)
 							if(cntunmatch==0){
 								//照合成功
 								console->append(CONSTXT_APPMESSAGE, tr("tr_msg_verify_success") + path);
+
+								if(confighash.value("exectargetafterwriting").toBool()){
+									QMouseEvent* press = new QMouseEvent(QEvent::MouseButtonPress, ui->btnExecTarget->rect().center(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+									QMouseEvent* release = new QMouseEvent(QEvent::MouseButtonRelease, ui->btnExecTarget->rect().center(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+
+									QApplication::postEvent(ui->btnExecTarget, press);
+									QApplication::postEvent(ui->btnExecTarget, release);
+								}
 							}
 							else{
 								//照合失敗
@@ -625,7 +644,7 @@ void MainWindow::on_btnTestConnection_clicked()
 		//ブリッジバージョンを取得して接続確認
 		if(!thcom->bridgeVersion(&version)){
 			console->append(CONSTXT_ERROR, thcom->errorMessage());
-			console->append(CONSTXT_APPMESSAGE, QString("eltime:%1").arg(g_eltime));
+			//console->append(CONSTXT_APPMESSAGE, QString("eltime:%1").arg(g_eltime));
 			return;
 		}
 		console->append(CONSTXT_APPMESSAGE, QString("Bridge version:%1").arg(version));
@@ -657,7 +676,7 @@ void MainWindow::on_btnTestConnection_clicked()
         }
     }
 
-	console->append(CONSTXT_APPMESSAGE, QString("eltime:%1").arg(g_eltime));
+	//console->append(CONSTXT_APPMESSAGE, QString("eltime:%1").arg(g_eltime));
 }
 
 

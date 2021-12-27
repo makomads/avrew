@@ -492,7 +492,7 @@ public:
         QObject::connect(btnOKCancel, SIGNAL(accepted()), ConfigDialog, SLOT(accept()));
         QObject::connect(btnOKCancel, SIGNAL(rejected()), ConfigDialog, SLOT(reject()));
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(ConfigDialog);
