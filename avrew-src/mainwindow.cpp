@@ -281,17 +281,23 @@ void MainWindow::applyConfig()
 	}
 	console->append(CONSTXT_APPMESSAGE, message);
 
-	//ピンの機能設定
+
+	//ASync時の設定
 	if(thcom->comportMode()==COMIF_ASYNC){
+		//ピンの機能設定
 		int pinfuncs[4], pinstats[4];
 		for(i=0; i<4; i++){
 		   pinfuncs[i] = btnFunction[i]->function();
 		   pinstats[i] = btnFunction[i]->pinState();
-	   }
-       if(!thcom->setPinDirections(pinfuncs))
+		}
+		if(!thcom->setPinDirections(pinfuncs))
 		   console->append(CONSTXT_ERROR, thcom->errorMessage());
-       if(!thcom->setPinStates(pinstats))
-           console->append(CONSTXT_ERROR, thcom->errorMessage());
+		if(!thcom->setPinStates(pinstats))
+		   console->append(CONSTXT_ERROR, thcom->errorMessage());
+
+		//SPIディレイ設定
+		float delayusec = confighash.value("asyncspidelay").toFloat();
+		thcom->setSPIDelayForAsync(delayusec);
 	}
 }
 

@@ -84,36 +84,6 @@
            <layout class="QGridLayout" name="gridLayout_9">
             <item row="0" column="0">
              <layout class="QGridLayout" name="gridLayout">
-              <item row="3" column="1">
-               <widget class="QComboBox" name="cmbBaudRate"/>
-              </item>
-              <item row="2" column="1">
-               <widget class="QComboBox" name="cmbSynchMode"/>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_3">
-                <property name="text">
-                 <string>通信速度</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_2">
-                <property name="text">
-                 <string>COMポート　　　　　</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label">
-                <property name="text">
-                 <string>通信方式</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QComboBox" name="cmbComPort"/>
-              </item>
               <item row="2" column="2">
                <spacer name="horizontalSpacer">
                 <property name="orientation">
@@ -127,24 +97,80 @@
                 </property>
                </spacer>
               </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="label_5">
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_2">
                 <property name="text">
-                 <string>SPIモードディレイ</string>
+                 <string>COMポート　　　　　</string>
                 </property>
                </widget>
               </item>
-              <item row="4" column="2">
-               <widget class="QLabel" name="label_7">
+              <item row="2" column="1">
+               <widget class="QComboBox" name="cmbSynchMode"/>
+              </item>
+              <item row="3" column="1">
+               <widget class="QComboBox" name="cmbBaudRate"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_3">
                 <property name="text">
-                 <string>マイクロ秒/bit</string>
+                 <string>通信速度</string>
                 </property>
                </widget>
               </item>
-              <item row="4" column="1">
-               <widget class="QLineEdit" name="edtSPIDelay"/>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>通信方式</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="cmbComPort"/>
               </item>
              </layout>
+            </item>
+            <item row="1" column="0">
+             <widget class="QGroupBox" name="groupBox">
+              <property name="title">
+               <string>SPIディレイ</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_6">
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="edtASyncDelay"/>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLineEdit" name="edtSPIDelay"/>
+               </item>
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>マイクロ秒/bit</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QLabel" name="label_11">
+                 <property name="text">
+                  <string>マイクロ秒/bit</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>SPIモード</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>調歩同期モード</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </item>
            </layout>
           </widget>

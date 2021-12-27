@@ -87,6 +87,7 @@ public:
     bool setPinDirections(int directions[4]);
     bool setPinStates(int states[4]);
 	bool resetTarget(bool execmode);
+	bool setSPIDelayForAsync(float usec);
 
 	//送受信低レベル関数
 	bool exchangeCommand(unsigned char *in, int a, int b, int c, int d);

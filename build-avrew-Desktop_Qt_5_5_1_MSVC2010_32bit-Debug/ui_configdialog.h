@@ -49,16 +49,21 @@ public:
     QGroupBox *groupBox_3;
     QGridLayout *gridLayout_9;
     QGridLayout *gridLayout;
-    QComboBox *cmbBaudRate;
-    QComboBox *cmbSynchMode;
-    QLabel *label_3;
+    QSpacerItem *horizontalSpacer;
     QLabel *label_2;
+    QComboBox *cmbSynchMode;
+    QComboBox *cmbBaudRate;
+    QLabel *label_3;
     QLabel *label;
     QComboBox *cmbComPort;
-    QSpacerItem *horizontalSpacer;
-    QLabel *label_5;
-    QLabel *label_7;
+    QGroupBox *groupBox;
+    QGridLayout *gridLayout_6;
+    QLineEdit *edtASyncDelay;
     QLineEdit *edtSPIDelay;
+    QLabel *label_7;
+    QLabel *label_11;
+    QLabel *label_5;
+    QLabel *label_4;
     QSpacerItem *verticalSpacer;
     QWidget *tab_2;
     QGridLayout *gridLayout_11;
@@ -165,25 +170,29 @@ public:
         gridLayout_9->setObjectName(QStringLiteral("gridLayout_9"));
         gridLayout = new QGridLayout();
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
-        cmbBaudRate = new QComboBox(groupBox_3);
-        cmbBaudRate->setObjectName(QStringLiteral("cmbBaudRate"));
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        gridLayout->addWidget(cmbBaudRate, 3, 1, 1, 1);
+        gridLayout->addItem(horizontalSpacer, 2, 2, 1, 1);
+
+        label_2 = new QLabel(groupBox_3);
+        label_2->setObjectName(QStringLiteral("label_2"));
+
+        gridLayout->addWidget(label_2, 1, 0, 1, 1);
 
         cmbSynchMode = new QComboBox(groupBox_3);
         cmbSynchMode->setObjectName(QStringLiteral("cmbSynchMode"));
 
         gridLayout->addWidget(cmbSynchMode, 2, 1, 1, 1);
 
+        cmbBaudRate = new QComboBox(groupBox_3);
+        cmbBaudRate->setObjectName(QStringLiteral("cmbBaudRate"));
+
+        gridLayout->addWidget(cmbBaudRate, 3, 1, 1, 1);
+
         label_3 = new QLabel(groupBox_3);
         label_3->setObjectName(QStringLiteral("label_3"));
 
         gridLayout->addWidget(label_3, 3, 0, 1, 1);
-
-        label_2 = new QLabel(groupBox_3);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        gridLayout->addWidget(label_2, 1, 0, 1, 1);
 
         label = new QLabel(groupBox_3);
         label->setObjectName(QStringLiteral("label"));
@@ -195,27 +204,45 @@ public:
 
         gridLayout->addWidget(cmbComPort, 1, 1, 1, 1);
 
-        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        gridLayout->addItem(horizontalSpacer, 2, 2, 1, 1);
-
-        label_5 = new QLabel(groupBox_3);
-        label_5->setObjectName(QStringLiteral("label_5"));
-
-        gridLayout->addWidget(label_5, 4, 0, 1, 1);
-
-        label_7 = new QLabel(groupBox_3);
-        label_7->setObjectName(QStringLiteral("label_7"));
-
-        gridLayout->addWidget(label_7, 4, 2, 1, 1);
-
-        edtSPIDelay = new QLineEdit(groupBox_3);
-        edtSPIDelay->setObjectName(QStringLiteral("edtSPIDelay"));
-
-        gridLayout->addWidget(edtSPIDelay, 4, 1, 1, 1);
-
 
         gridLayout_9->addLayout(gridLayout, 0, 0, 1, 1);
+
+        groupBox = new QGroupBox(groupBox_3);
+        groupBox->setObjectName(QStringLiteral("groupBox"));
+        gridLayout_6 = new QGridLayout(groupBox);
+        gridLayout_6->setObjectName(QStringLiteral("gridLayout_6"));
+        edtASyncDelay = new QLineEdit(groupBox);
+        edtASyncDelay->setObjectName(QStringLiteral("edtASyncDelay"));
+
+        gridLayout_6->addWidget(edtASyncDelay, 1, 1, 1, 1);
+
+        edtSPIDelay = new QLineEdit(groupBox);
+        edtSPIDelay->setObjectName(QStringLiteral("edtSPIDelay"));
+
+        gridLayout_6->addWidget(edtSPIDelay, 0, 1, 1, 1);
+
+        label_7 = new QLabel(groupBox);
+        label_7->setObjectName(QStringLiteral("label_7"));
+
+        gridLayout_6->addWidget(label_7, 0, 2, 1, 1);
+
+        label_11 = new QLabel(groupBox);
+        label_11->setObjectName(QStringLiteral("label_11"));
+
+        gridLayout_6->addWidget(label_11, 1, 2, 1, 1);
+
+        label_5 = new QLabel(groupBox);
+        label_5->setObjectName(QStringLiteral("label_5"));
+
+        gridLayout_6->addWidget(label_5, 0, 0, 1, 1);
+
+        label_4 = new QLabel(groupBox);
+        label_4->setObjectName(QStringLiteral("label_4"));
+
+        gridLayout_6->addWidget(label_4, 1, 0, 1, 1);
+
+
+        gridLayout_9->addWidget(groupBox, 1, 0, 1, 1);
 
 
         gridLayout_7->addWidget(groupBox_3, 0, 0, 1, 1);
@@ -479,11 +506,14 @@ public:
         chkExecTargetAfterWriting->setText(QApplication::translate("ConfigDialog", "\346\233\270\343\201\215\350\276\274\343\201\277\345\256\214\344\272\206\345\276\214\343\202\277\343\203\274\343\202\262\343\203\203\343\203\210\343\202\222\350\265\267\345\213\225\343\201\231\343\202\213", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("ConfigDialog", "\345\205\250\350\210\254", 0));
         groupBox_3->setTitle(QApplication::translate("ConfigDialog", "\343\202\267\343\203\252\343\202\242\343\203\253\343\203\235\343\203\274\343\203\210", 0));
-        label_3->setText(QApplication::translate("ConfigDialog", "\351\200\232\344\277\241\351\200\237\345\272\246", 0));
         label_2->setText(QApplication::translate("ConfigDialog", "COM\343\203\235\343\203\274\343\203\210\343\200\200\343\200\200\343\200\200\343\200\200\343\200\200", 0));
+        label_3->setText(QApplication::translate("ConfigDialog", "\351\200\232\344\277\241\351\200\237\345\272\246", 0));
         label->setText(QApplication::translate("ConfigDialog", "\351\200\232\344\277\241\346\226\271\345\274\217", 0));
-        label_5->setText(QApplication::translate("ConfigDialog", "SPI\343\203\242\343\203\274\343\203\211\343\203\207\343\202\243\343\203\254\343\202\244", 0));
+        groupBox->setTitle(QApplication::translate("ConfigDialog", "SPI\343\203\207\343\202\243\343\203\254\343\202\244", 0));
         label_7->setText(QApplication::translate("ConfigDialog", "\343\203\236\343\202\244\343\202\257\343\203\255\347\247\222/bit", 0));
+        label_11->setText(QApplication::translate("ConfigDialog", "\343\203\236\343\202\244\343\202\257\343\203\255\347\247\222/bit", 0));
+        label_5->setText(QApplication::translate("ConfigDialog", "SPI\343\203\242\343\203\274\343\203\211", 0));
+        label_4->setText(QApplication::translate("ConfigDialog", "\350\252\277\346\255\251\345\220\214\346\234\237\343\203\242\343\203\274\343\203\211", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("ConfigDialog", "\343\203\226\343\203\252\343\203\203\343\202\270", 0));
         groupBox_4->setTitle(QApplication::translate("ConfigDialog", "\343\203\226\343\203\252\343\203\203\343\202\270-\343\202\277\343\203\274\343\202\262\343\203\203\343\203\210\351\226\223\351\200\232\344\277\241", 0));
         label_16->setText(QApplication::translate("ConfigDialog", "\346\224\271\350\241\214\343\202\263\343\203\274\343\203\211", 0));

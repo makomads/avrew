@@ -772,6 +772,20 @@ bool ComThread::resetTarget(bool execmode)
 	return true;
 }
 
+bool ComThread::setSPIDelayForAsync(float usec)
+{
+	int delayval;
+	unsigned char in[4];
+	delayval = (int)(usec / 0.3);
+
+	exchangeCommand(in, 0xFF, 21, delayval, 0);
+	if(in[0]!=0xFF || in[1]!=21){
+		setError(tr("tr_err_br_responce"));
+		return false;
+	}
+	return true;
+}
+
 
 bool ComThread::exchangeCommand(unsigned char *in, int a, int b, int c, int d)
 {

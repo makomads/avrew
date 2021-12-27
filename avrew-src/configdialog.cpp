@@ -12,7 +12,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->cmbSynchMode->addItem(tr("tr_async"),COMIF_ASYNC);
     ui->cmbSynchMode->addItem(tr("SPI"),COMIF_SPI);
 
-	int rates[] = {230400, 115200,14400,1800,0};
+	int rates[] = {230400, 115200,28800,14400,3600,1800,0};
     for(i=0; rates[i]!=0; i++){
         ui->cmbBaudRate->addItem(tr("%1").arg(rates[i]),rates[i]);
     }
@@ -76,6 +76,7 @@ void ConfigDialog::showEvent(QShowEvent *event)
     ui->cmbComPort->setCurrentIndex(ui->cmbComPort->findData(hash.value("comport").toString()));
     ui->cmbBaudRate->setCurrentIndex(ui->cmbBaudRate->findData(hash.value("baudrate")));
 	ui->edtSPIDelay->setText(hash.value("spidelay").toString());
+	ui->edtASyncDelay->setText(hash.value("asyncspidelay").toString());
 
 	for(i=0; i<cmbPinFunc.size(); i++){
         for(j=0; j<3; j++){
@@ -105,7 +106,7 @@ void ConfigDialog::loadSettings(QSettings &stg)
     int i;
     QString keys[] = {
 		"connectonboot", "pipename", "tcpport",
-		"synchmode", "comport", "baudrate", "spidelay",
+		"synchmode", "comport", "baudrate", "spidelay", "asyncspidelay",
         "targetif",
         "pinconf00", "pinconf01", "pinconf02",
         "pinconf10", "pinconf11", "pinconf12",
@@ -118,7 +119,7 @@ void ConfigDialog::loadSettings(QSettings &stg)
     };
     QVariant defaults[] = {
 		true, "avrew", 12000,
-		COMIF_ASYNC, "COM1", 115200, 100,
+		COMIF_ASYNC, "COM1", 115200, 100, 0.5,
         0,
         PINFUNC_ALTERNATE, PINSTATE_LOW, PINSTATE_HIGH,
         PINFUNC_ALTERNATE, PINSTATE_LOW, PINSTATE_HIGH,
@@ -209,6 +210,7 @@ void ConfigDialog::on_btnOKCancel_accepted()
     hash.insert("baudrate", ui->cmbBaudRate->itemData(ui->cmbBaudRate->currentIndex()));
     hash.insert("comport", ui->cmbComPort->itemData(ui->cmbComPort->currentIndex()));
 	hash.insert("spidelay", ui->edtSPIDelay->text().toInt());
+	hash.insert("asyncspidelay", ui->edtASyncDelay->text().toFloat());
 
     for(i=0; i<cmbPinFunc.size(); i++){
         for(j=0; j<3; j++){
