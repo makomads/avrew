@@ -39,7 +39,7 @@ bool BridgeIO::openRS232C(const char* port, int bps)
 
     hcom = CreateFile(
 		comportw, GENERIC_READ|GENERIC_WRITE,0,NULL,
-		OPEN_EXISTING,/* FILE_ATTRIBUTE_NORMAL |*/ FILE_FLAG_OVERLAPPED,NULL );
+		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,NULL );
     if(hcom == INVALID_HANDLE_VALUE){
 		errcode = COMERR_PORT;
         return false;
@@ -71,23 +71,30 @@ bool BridgeIO::openRS232C(const char* port, int bps)
     // ソフトウェアフロー制御なし
     dcb.fOutX = FALSE;
     dcb.fInX = FALSE;
-    if(!SetCommState(hcom, &dcb)){  //SetCommState()関数にポートハンドルおよびdcb構造体のアドレスを代入する
+	if(!SetCommState(hcom, &dcb)){
 		 errcode = COMERR_PORT;
          return false;
     }
 
 	//本来のビットレートで設定し直す
 	dcb.BaudRate = bitrate;
-	SetCommState(hcom, &dcb);
+	if(!SetCommState(hcom, &dcb)){
+		 errcode = COMERR_PORT;
+		 return false;
+	}
 
     //タイムアウト時間
 	switch(bitrate){
+		case 230400:
+			timeout = 10; break;
 		case 115200:
-			timeout = 30; break;
+			timeout = 10; break;
 		case 14400:
 			timeout = 100; break;
 		case 1800:
 			timeout = 300; break;
+		default:
+			timeout = 20; break;
 	}
 
 	comto.ReadIntervalTimeout = 0; //文字間隔の最大待ち時間(ミリ秒) NT系では無効
@@ -203,8 +210,8 @@ bool BridgeIO::send(unsigned char *buf, int outlen)
 	unsigned char sendbuf[4096];
 	int sendbufsize = (int)sizeof(sendbuf);
 	DWORD wlen;
-	char debugstr[10000], cmdstr[100];
-	debugstr[0]='\0';
+	//char debugstr[10000], cmdstr[100];
+	//debugstr[0]='\0';
 	int i;
 
 	//バッファサイズをブロック長の倍数になるよう合わせる
@@ -220,18 +227,15 @@ bool BridgeIO::send(unsigned char *buf, int outlen)
 		else if(i%4==3) sendbuf[i] = 0xAA;  //0b10101010
 	}
 
+	//末尾に追加
+	//先頭に追加するとブロック転送でパディングが書き込まれてしまう
 	memcpy(sendbuf+(sendlen-outlen), buf, outlen);
 
+    //送信
 	index = 0;
 	sendleft = sendlen;
 	while (sendleft > 0){
-
-		OVERLAPPED ovlp;
-		memset(&ovlp, 0, sizeof(OVERLAPPED));
-		ovlp.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-
-		if(WriteFile(hcom, sendbuf+index, sendleft, &wlen, &ovlp)==FALSE){
+		if(WriteFile(hcom, sendbuf+index, sendleft, &wlen, NULL)==FALSE){
 			errcode = COMERR_SEND;
 			//return false;
 		}
@@ -244,30 +248,26 @@ bool BridgeIO::send(unsigned char *buf, int outlen)
 
 unsigned long g_eltime;
 
-int BridgeIO::receive(unsigned char *buf, int maxlen)
+int BridgeIO::receive(unsigned char *buf, int reqlen)
 {
-	DWORD readlen;
+    DWORD pos=0, readlen=0;
+	int retrycount=10;
 
-	OVERLAPPED ovlp;
-	memset(&ovlp, 0, sizeof(OVERLAPPED));
-
-	while(true){
+    while(pos!=reqlen && retrycount!=0){
 		DWORD start = timeGetTime();
-		::ReadFile(hcom, buf, maxlen, &readlen, &ovlp);
+        ::ReadFile(hcom, &buf[pos], reqlen-pos, &readlen, NULL);
 		DWORD end = timeGetTime();
 		g_eltime = end - start;
 
-		if(readlen!=0)
-			break;
-		Sleep(10);
+        pos += readlen;
+        retrycount--;
 	}
 
-
-	if(readlen!=maxlen){
+    if(pos!=reqlen){
 		errcode = COMERR_RECEIVE;
 		return 0;
 	}
-	return maxlen;
+    return reqlen;
 }
 
 

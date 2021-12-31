@@ -111,12 +111,11 @@ void ComThread::run()
 		else if(comif == COMIF_SPI)
             runWriteSPI(varlist[0].toByteArray(), varlist[1].toByteArray());
 		break;
-	case COMOP_READFLASH:
-	case COMOP_READEEPROM:
+	case COMOP_READ:
 		if(comif == COMIF_ASYNC)
-			runReadAsync();
+			runReadAsync(varlist[0].toInt(), varlist[1].toInt());
 		else if(comif == COMIF_SPI)
-			runReadSPI();
+			runReadSPI(varlist[0].toInt(), varlist[1].toInt());
 		break;
 	case COMOP_TARGETEXEC:
 		runTarget();
@@ -146,109 +145,119 @@ bool ComThread::startWrite(QObject *receiver, QByteArray flashimg, QByteArray ee
 void ComThread::runWriteAsync(QByteArray flashimg, QByteArray eepimg)
 {
 	ThreadEvent *ev = new ThreadEvent(operation);
-	unsigned char *pimg;
-	int i,j,r=0;
-	int orgimgsize;
-	int pageaddr;
+	int pos;
+	int realimgsize;
 	int npages;
+	int blocksize = 32;
+	int nblocks;
     QByteArray senddata, recvdata;
-	unsigned char singlein[4], ins[10000];
+	unsigned char in[4];
 
 	ev = new ThreadEvent(operation);
 	ev->setValueMax(0,0);
 	QApplication::postEvent(receiver, ev);
 
 	//Flash,EEPROM消去
-	if(!exchangeCommand(singlein, 0xAC, 0x80, 0, 0)){
+	if(!exchangeCommand(in, 0xAC, 0x80, 0, 0)){
 		QApplication::postEvent(receiver, new ThreadEvent(operation, -1, trIOError()));
 		return;
 	}
-	msleep(9);
+	msleep(10);
 
-	//イメージをページ境界になるよう拡張し、余分な部分はFFで埋める
-	orgimgsize = flashimg.size();
-	npages = (flashimg.length() + devspec->flashpagesize-1) / devspec->flashpagesize;
-	flashimg.resize(npages * devspec->flashpagesize);
-	pimg = (unsigned char*)flashimg.data();
-	memset(pimg+orgimgsize, 0xFF, flashimg.size()-orgimgsize);
+	//イメージをページまたはブロックの大きい方の境界になるよう拡張し、余分な部分はFFで埋める
+	realimgsize = flashimg.size();
+	if(devspec->flashpagesize > blocksize){
+		npages = (flashimg.length() + devspec->flashpagesize-1) / devspec->flashpagesize;
+		flashimg.resize(npages * devspec->flashpagesize);
+		nblocks = flashimg.size() / blocksize;
+	}
+	else{
+		nblocks = (flashimg.length() + blocksize-1) / blocksize;
+		flashimg.resize(nblocks * blocksize);
+		npages = flashimg.size() / devspec->flashpagesize;
+	}
+	memset(flashimg.data()+realimgsize, 0xFF, flashimg.size()-realimgsize);
 
-	//連続データの長さ設定(上位、下位の順)
-	exchangeCommand(singlein, 0xFF, 0xCE,
-					(devspec->flashpagesize>>8) & 0xFF, devspec->flashpagesize&0xFF);
+    //ページサイズ設定(上位、下位の順)
+	exchangeCommand(in, 0xFF, 0xCE, (devspec->flashpagesize>>8)&0xFF, devspec->flashpagesize&0xFF);
+	//連続書き込み開始
+	exchangeCommand(in, 0xFF, 0xC0, (nblocks>>8)&0xFF, nblocks&0xFF);
 
 	//書き込み
 	postProgressEvent(0, flashimg.size());
-	pageaddr = 0;
-	while(pageaddr*2 < flashimg.size()){
-		//送信データ作成
-		addCommand(senddata, 0xFF, 0xC0, 0, 0);	//連続ページ設定
-		senddata.append((const char*)pimg, devspec->flashpagesize);
-		pimg += devspec->flashpagesize;
-		addCommand(senddata, 0x4C, (pageaddr>>8)&0xFF, pageaddr&0xFF, 0);
-		pageaddr += devspec->flashpagesize/2;   //ワード単位なので/2
+	pos = 0;
+	while(pos < flashimg.size()){
 		//送信
-        send((unsigned char*)senddata.data(), senddata.size());
-		//受信
-        recvdata = receiveCommandResp(2*4, false); //0xFF,0xC0と、0x4Cの2コマンドが返るはず
-		//ウエイト(4.5ms)
-		msleep(5);
+		senddata = flashimg.mid(pos, blocksize);
+		pos += blocksize;
+		send((unsigned char*)senddata.data(), blocksize);
 		senddata.clear();
-		postProgressEvent(pageaddr*2, flashimg.size());
+		//受信
+		recvdata = receiveCommandResp(4, false);
+		postProgressEvent(pos, flashimg.size());
 	}
-	postProgressEvent(pageaddr*2, flashimg.size());
+	postProgressEvent(pos, flashimg.size());
 
 	//EEPROM
 	if(eepimg.size()!=0){
-		orgimgsize = eepimg.size();
-		npages = (eepimg.length() + devspec->eeppagesize-1) / devspec->eeppagesize;
-		eepimg.resize(npages * devspec->eeppagesize);
-		pimg = (unsigned char*)eepimg.data();
-		memset(eepimg.data()+orgimgsize, 0xFF, eepimg.size() - orgimgsize);
+		realimgsize = eepimg.size();
+		if(devspec->eeppagesize > blocksize){
+			npages = (eepimg.length() + devspec->eeppagesize-1) / devspec->eeppagesize;
+			eepimg.resize(npages * devspec->eeppagesize);
+			nblocks = eepimg.size() / blocksize;
+		}
+		else{
+			nblocks = (eepimg.length() + blocksize-1) / blocksize;
+			eepimg.resize(nblocks * blocksize);
+			npages = eepimg.size() / devspec->eeppagesize;
+		}
+		memset(eepimg.data()+realimgsize, 0xFF, eepimg.size()-realimgsize);
 
-		//連続データの長さ設定(上位、下位の順)
-		exchangeCommand(singlein, 0xFF, 0xCE,
+		//ページサイズ設定(上位、下位の順)
+		exchangeCommand(in, 0xFF, 0xCE,
 						(devspec->eeppagesize>>8) & 0xFF, devspec->eeppagesize&0xFF);
+		//連続書き込み開始
+		exchangeCommand(in, 0xFF, 0xC2, (nblocks>>8)&0xFF, nblocks&0xFF);
+
 		//書き込み
 		postProgressEvent(0, eepimg.size());
-		pageaddr = 0;
-		while(pageaddr < eepimg.size()){
-			//送信データ作成
-			addCommand(senddata, 0xFF, 0xC2, 0, 0);	//連続ページ設定
-			senddata.append((const char*)pimg, devspec->eeppagesize);
-			pimg += devspec->eeppagesize;
-			addCommand(senddata, 0xC2, (pageaddr>>8)&0xFF, pageaddr&0xFF, 0);
-			pageaddr += devspec->eeppagesize;
+		pos = 0;
+		while(pos < eepimg.size()){
 			//送信
-			send((unsigned char*)senddata.data(), senddata.size());
-			//受信
-			recvdata = receiveCommandResp(2*4, false); //0xFF,0xC0と、0xC2の2コマンドが返るはず
-			//ウエイト(4.5ms)
-			msleep(5);
+			senddata = eepimg.mid(pos, blocksize);
+			pos += blocksize;
+			send((unsigned char*)senddata.data(), blocksize);
 			senddata.clear();
-			postProgressEvent(pageaddr, eepimg.size());
+			//受信
+			recvdata = receiveCommandResp(4, false);
+			postProgressEvent(pos, eepimg.size());
 		}
 		postProgressEvent(eepimg.size(), eepimg.size());
 	}
 
 	//完了
-	QApplication::postEvent(receiver, new ThreadEvent(operation, 0, QString("")));
+	ev = new ThreadEvent(operation);
+	ev->setFinished(true);
+	ev->setParameter(flashimg, 0);
+	ev->setParameter(eepimg, 1);
+	QApplication::postEvent(receiver, ev);
 }
 
 void ComThread::runWriteSPI(QByteArray flashimg, QByteArray eepimg)
 {
 	ThreadEvent *ev;
 	int i,j,r=0;
-	int orgimgsize;
+	int realimgsize;
 	int npages;
 	int addr;
 	unsigned char out, in[4];
 	int cntunmatch=0;
 
 	//Flashイメージをページ境界になるよう拡張する
-	orgimgsize = flashimg.size();
+	realimgsize = flashimg.size();
 	npages = (flashimg.length() + devspec->flashpagesize-1) / devspec->flashpagesize;
 	flashimg.resize(npages * devspec->flashpagesize);
-	memset(flashimg.data()+orgimgsize, 0xFF, flashimg.size() - orgimgsize);
+	memset(flashimg.data()+realimgsize, 0xFF, flashimg.size() - realimgsize);
 
 	//消去
     if(!exchangeCommand(NULL, 0xAC, 0x80, 0, 0)){
@@ -277,10 +286,10 @@ void ComThread::runWriteSPI(QByteArray flashimg, QByteArray eepimg)
 
 	//EEPROM
 	if(cntunmatch==0 && eepimg.size()!=0){
-		orgimgsize = eepimg.size();
+		realimgsize = eepimg.size();
 		npages = (eepimg.length() + devspec->eeppagesize-1) / devspec->eeppagesize;
 		eepimg.resize(npages * devspec->eeppagesize);
-		memset(eepimg.data()+orgimgsize, 0xFF, eepimg.size() - orgimgsize);
+		memset(eepimg.data()+realimgsize, 0xFF, eepimg.size() - realimgsize);
 
 		//書き込み
 		postProgressEvent(0, eepimg.size());
@@ -299,63 +308,45 @@ void ComThread::runWriteSPI(QByteArray flashimg, QByteArray eepimg)
 	}
 
 	//完了
-	QApplication::postEvent(receiver, new ThreadEvent(operation, r, QString("")));
+	ev = new ThreadEvent(operation);
+	ev->setFinished(true);
+	ev->setParameter(flashimg, 0);
+	ev->setParameter(eepimg, 1);
+	QApplication::postEvent(receiver, ev);
 }
 
 
 
-bool ComThread::startReadFlash(QObject *receiver)
+bool ComThread::startRead(QObject *receiver, int flashsize, int eepsize)
 {
 	if(!io->isOpend()){
 		setError(tr("tr_err_ionotopend"));
 		return false;
 	}
 	this->receiver = receiver;
-	operation = COMOP_READFLASH;
+	operation = COMOP_READ;
 	varlist.clear();
+	varlist.append(flashsize);
+	varlist.append(eepsize);
     wait();
 	start();
 	return true;
 }
 
-bool ComThread::startReadEEPROM(QObject *receiver)
-{
-	if(!io->isOpend()){
-		setError(tr("tr_err_ionotopend"));
-		return false;
-	}
-	this->receiver = receiver;
-	operation = COMOP_READEEPROM;
-	varlist.clear();
-    wait();
-	start();
-	return true;
-}
 
-void ComThread::runReadAsync()
+void ComThread::runReadAsync(int flashsize, int eepsize)
 {
-	ThreadEvent *ev = new ThreadEvent(operation);
-	QByteArray readimg, senddata, recvdata;
-	int retcode = 0;
+	ThreadEvent *ev;
+	QByteArray recvdata;
+	int opcnt;
 	unsigned char in[4];
 	int nblocks;
-	int blksize;
-	int blkaddr;
-	int imagesize;
+	int blksize = 32; //読み込みはバイト単位だがある程度まとめて読む
+	int pos;
+	int imagesize, realsize;
 	int blockmodetype;
 	QString errmsg;
-
-	if(operation == COMOP_READFLASH){
-		imagesize = devspec->flashpagesize * devspec->nflashpages;
-		blockmodetype = 0xC1;
-		blksize = 256;
-	}
-	else if(operation == COMOP_READEEPROM){
-		imagesize = devspec->eeppagesize * devspec->neeppages;
-		blockmodetype = 0xC3;
-		blksize = 128;
-	}
-	nblocks = (imagesize+(blksize-1))/blksize;
+	QByteArray flashimg, eepimg, *pimg;
 
 	//連続データのブロック長設定(上位、下位の順)、接続確認も兼ねている
 	if(!exchangeCommand(in, 0xFF, 0xCE, (blksize>>8)&0xFF, blksize&0xFF))
@@ -369,77 +360,100 @@ void ComThread::runReadAsync()
 		return;
 	}
 
-	//ブロック単位ループ
-	postProgressEvent(0, imagesize);
-	for(int i=0; i<nblocks; i++){
-		//ブロックアドレス設定
-		blkaddr = i*blksize;
-		if(operation == COMOP_READFLASH)
-			blkaddr /= 2;	//FLASHのアドレスはワード単位なので/2する、EEPはバイト単位
+	//FlashとEEPROMで2回ループ
+	for(opcnt=0; opcnt<2; opcnt++){
+		if( (opcnt==0 && flashsize<=0) || (opcnt==1 && eepsize<=0) )
+			continue;
 
-		//コマンド実行
-        /*
-        senddata.clear();
-		addCommand(senddata, 0xFF, blockmodetype, (blkaddr>>8)&0xFF, blkaddr&0xFF);
-		send((unsigned char*)senddata.data(), 4);
-        recvdata = receiveCommandResp(4, false);*/
-        exchangeCommand(in, 0xFF, blockmodetype, (blkaddr>>8)&0xFF, blkaddr&0xFF);
-		recvdata = receiveCommandResp(blksize, true);
-		readimg.append(recvdata, blksize);
-		postProgressEvent(readimg.size(), imagesize);
+		//ブロック数
+		if(opcnt==0){
+			realsize = flashsize;
+			blockmodetype = 0xC1;
+			pimg = &flashimg;
+		}
+		else if(opcnt==1){
+			realsize = eepsize;
+			blockmodetype = 0xC3;
+			pimg = &eepimg;
+		}
+		nblocks = (realsize + blksize-1) / blksize;
+		imagesize = nblocks * blksize;
+
+		//連続読み込み開始
+		exchangeCommand(in, 0xFF, blockmodetype, (nblocks>>8)&0xFF, nblocks&0xFF);
+
+		//読み込み
+		postProgressEvent(0, imagesize);
+		pos = 0;
+		while(pos < imagesize){
+			//受信
+			recvdata = receiveCommandResp(blksize, true);
+			pimg->append(recvdata, blksize);
+			pos += blksize;
+			postProgressEvent(pos, imagesize);
+		}
+		postProgressEvent(pos, imagesize);
+		pimg->resize(realsize);
 	}
-	postProgressEvent(imagesize, imagesize);
 
 	//完了イベント送出
-	ev->setReturnCode(retcode);
-	if(retcode < 0)
-		ev->setErrorMessage(errmsg);
+	ev = new ThreadEvent(operation, 0, QString(""));
 	ev->setFinished(true);
-	ev->setParameter(readimg, 0);
+	ev->setValueMax(imagesize,imagesize);
+	ev->setParameter(flashimg, 0);
+	ev->setParameter(eepimg, 1);
 	QApplication::postEvent(receiver, ev);
 }
 
-void ComThread::runReadSPI()
+void ComThread::runReadSPI(int flashsize, int eepsize)
 {
 	ThreadEvent *ev;
-	QByteArray readimg;
 	int i;
 	unsigned char in[4];
 	int addr;
-    int pagesize;
+	int realsize;
+	int blksize=32;
+	int opcnt;
+	QByteArray flashimg, eepimg, *pimg;
 
-    if(operation == COMOP_READFLASH){
-        pagesize = devspec->flashpagesize;
-        readimg.resize(pagesize * devspec->nflashpages);
-    }
-    else if(operation == COMOP_READEEPROM){
-        pagesize = devspec->eeppagesize;
-        readimg.resize(pagesize * devspec->neeppages);
-    }
-	postProgressEvent(0, readimg.size());
-	for(i=0; i<readimg.size(); i++){
-        if(operation == COMOP_READFLASH){
-            addr = i/2;
-            if(i%2==0)
-                exchangeCommand(in, 0x20, (addr>>8)&0xFF, addr&0xFF, 0);
-            else
-                exchangeCommand(in, 0x28, (addr>>8)&0xFF, addr&0xFF, 0);
-        }
-        else if(operation == COMOP_READEEPROM){
-            addr = i;
-            exchangeCommand(in, 0xA0, (addr>>8)&0xFF, addr&0xFF, 0);
-        }
-		readimg[i] = in[3];
-        if(i%pagesize == 0)
-			postProgressEvent(i, readimg.size());
+	for(opcnt=0; opcnt<2; opcnt++){
+		if(opcnt == 0){
+			realsize = flashsize;
+			pimg = &flashimg;
+		}
+		else if(opcnt == 1){
+			realsize = eepsize;
+			pimg = &eepimg;
+		}
+		pimg->resize(realsize);
+
+		postProgressEvent(0, realsize);
+		for(i=0; i<realsize; i++){
+			if( (opcnt==0 && flashsize<=0) || (opcnt==1 && eepsize<=0) )
+				continue;
+			if(opcnt == 0){
+				addr = i/2;
+				if(i%2==0)
+					exchangeCommand(in, 0x20, (addr>>8)&0xFF, addr&0xFF, 0);
+				else
+					exchangeCommand(in, 0x28, (addr>>8)&0xFF, addr&0xFF, 0);
+			}
+			else if(opcnt == 1){
+				addr = i;
+				exchangeCommand(in, 0xA0, (addr>>8)&0xFF, addr&0xFF, 0);
+			}
+			(*pimg)[i] = in[3];
+			if(i%blksize == 0)
+				postProgressEvent(i, realsize);
+		}
+		postProgressEvent(realsize, realsize);
 	}
-	postProgressEvent(readimg.size(), readimg.size());
 
 	//完了イベント送出
-	ev = new ThreadEvent(operation);
-	ev->setReturnCode(i);
+	ev = new ThreadEvent(operation, 0, QString(""));
 	ev->setFinished(true);
-	ev->setParameter(readimg, 0);
+	ev->setParameter(flashimg, 0);
+	ev->setParameter(eepimg, 1);
 	QApplication::postEvent(receiver, ev);
 }
 
@@ -478,6 +492,7 @@ void ComThread::runTarget()
 	int inquecount;
 	QByteArray senddata, recvdata;
 
+	msleep(100);
 	while(continue_loop){
 		//送信
 		if(!tgtsendbuf.isEmpty()){
@@ -605,7 +620,7 @@ bool ComThread::bridgeVersion(int *ver)
 		return false;
 	}
 
-	exchangeCommand(in, 255, 6, 0, 0);
+	//exchangeCommand(in, 255, 6, 0, 0);
 	exchangeCommand(in, 0xFF, 20, 0, 0);
 	if(in[0]!=0xFF || in[1]!=20){
 		setError(tr("tr_err_br_responce"));
@@ -756,6 +771,20 @@ bool ComThread::resetTarget(bool execmode)
 	}
 	if(!r){
 		setError(trIOError());
+		return false;
+	}
+	return true;
+}
+
+bool ComThread::setSPIDelayForAsync(float usec)
+{
+	int delayval;
+	unsigned char in[4];
+	delayval = (int)(usec / 0.3);
+
+	exchangeCommand(in, 0xFF, 21, delayval, 0);
+	if(in[0]!=0xFF || in[1]!=21){
+		setError(tr("tr_err_br_responce"));
 		return false;
 	}
 	return true;

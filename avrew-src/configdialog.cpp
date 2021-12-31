@@ -12,7 +12,9 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->cmbSynchMode->addItem(tr("tr_async"),COMIF_ASYNC);
     ui->cmbSynchMode->addItem(tr("SPI"),COMIF_SPI);
 
-	int rates[] = {115200,14400,1800,0};
+	int rates[] = {150, 300, 600, 900, 1200, 1800, 2400, 3600, 4800, 9600,
+				   14400, 19200, 28800, 33600, 38400, 56000, 57600, 76800, 115200,
+				   128000, 153600, 230400, 460800, 921600, 1500000, 2000000, 0};
     for(i=0; rates[i]!=0; i++){
         ui->cmbBaudRate->addItem(tr("%1").arg(rates[i]),rates[i]);
     }
@@ -71,11 +73,13 @@ void ConfigDialog::showEvent(QShowEvent *event)
 	//ui->edtPipeName->setText(hash.value("pipename").toString());
 
 	ui->chkConnectOnBoot->setChecked(hash.value("connectonboot").toBool());
+	ui->chkExecTargetAfterWriting->setChecked(hash.value("exectargetafterwriting").toBool());
 
     ui->cmbSynchMode->setCurrentIndex(ui->cmbSynchMode->findData(hash.value("synchmode")));
     ui->cmbComPort->setCurrentIndex(ui->cmbComPort->findData(hash.value("comport").toString()));
     ui->cmbBaudRate->setCurrentIndex(ui->cmbBaudRate->findData(hash.value("baudrate")));
 	ui->edtSPIDelay->setText(hash.value("spidelay").toString());
+	ui->edtASyncDelay->setText(hash.value("asyncspidelay").toString());
 
 	for(i=0; i<cmbPinFunc.size(); i++){
         for(j=0; j<3; j++){
@@ -104,8 +108,9 @@ void ConfigDialog::loadSettings(QSettings &stg)
 {
     int i;
     QString keys[] = {
-		"connectonboot", "pipename", "tcpport",
-		"synchmode", "comport", "baudrate", "spidelay",
+		"connectonboot", "exectargetafterwriting",
+		"pipename", "tcpport",
+		"synchmode", "comport", "baudrate", "spidelay", "asyncspidelay",
         "targetif",
         "pinconf00", "pinconf01", "pinconf02",
         "pinconf10", "pinconf11", "pinconf12",
@@ -117,8 +122,9 @@ void ConfigDialog::loadSettings(QSettings &stg)
         ""
     };
     QVariant defaults[] = {
-		true, "avrew", 12000,
-		COMIF_ASYNC, "COM1", 115200, 100,
+		true, false,
+		"avrew", 12000,
+		COMIF_ASYNC, "COM1", 115200, 100, 0.5,
         0,
         PINFUNC_ALTERNATE, PINSTATE_LOW, PINSTATE_HIGH,
         PINFUNC_ALTERNATE, PINSTATE_LOW, PINSTATE_HIGH,
@@ -202,6 +208,7 @@ void ConfigDialog::on_btnOKCancel_accepted()
 
     hash.clear();	
 	hash.insert("connectonboot", ui->chkConnectOnBoot->isChecked());
+	hash.insert("exectargetafterwriting", ui->chkExecTargetAfterWriting->isChecked());
 //	hash.insert("pipename", ui->edtPipeName->text());
 //	hash.insert("tcpport", ui->edtTcpPort->text().toInt());
 
@@ -209,6 +216,7 @@ void ConfigDialog::on_btnOKCancel_accepted()
     hash.insert("baudrate", ui->cmbBaudRate->itemData(ui->cmbBaudRate->currentIndex()));
     hash.insert("comport", ui->cmbComPort->itemData(ui->cmbComPort->currentIndex()));
 	hash.insert("spidelay", ui->edtSPIDelay->text().toInt());
+	hash.insert("asyncspidelay", ui->edtASyncDelay->text().toFloat());
 
     for(i=0; i<cmbPinFunc.size(); i++){
         for(j=0; j<3; j++){

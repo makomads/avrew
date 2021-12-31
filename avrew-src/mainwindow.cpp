@@ -8,6 +8,7 @@
 #include <QTranslator>
 #include <QtGlobal>
 #include <QDateTime>
+#include <QMouseEvent>
 #include "mainwindow.h"
 #include "configdialog.h"
 #include "ui_mainwindow.h"
@@ -193,7 +194,7 @@ MainWindow::MainWindow(QWidget *parent) :
     applyConfig();
 
 	//プロセス間通信
-    localsv->listen("avrew");
+	localsv->listen("avrew");
 
     //シグナル接続
 	//タイマー
@@ -281,17 +282,23 @@ void MainWindow::applyConfig()
 	}
 	console->append(CONSTXT_APPMESSAGE, message);
 
-	//ピンの機能設定
+
+	//ASync時の設定
 	if(thcom->comportMode()==COMIF_ASYNC){
+		//ピンの機能設定
 		int pinfuncs[4], pinstats[4];
 		for(i=0; i<4; i++){
 		   pinfuncs[i] = btnFunction[i]->function();
 		   pinstats[i] = btnFunction[i]->pinState();
-	   }
-       if(!thcom->setPinDirections(pinfuncs))
+		}
+		if(!thcom->setPinDirections(pinfuncs))
 		   console->append(CONSTXT_ERROR, thcom->errorMessage());
-       if(!thcom->setPinStates(pinstats))
-           console->append(CONSTXT_ERROR, thcom->errorMessage());
+		if(!thcom->setPinStates(pinstats))
+		   console->append(CONSTXT_ERROR, thcom->errorMessage());
+
+		//SPIディレイ設定
+		float delayusec = confighash.value("asyncspidelay").toFloat();
+		thcom->setSPIDelayForAsync(delayusec);
 	}
 }
 
@@ -349,8 +356,7 @@ bool MainWindow::event(QEvent *event)
 		if(!e->isFinished()){
             switch(e->operation()){
             case COMOP_WRITE:
-            case COMOP_READFLASH:
-            case COMOP_READEEPROM:
+			case COMOP_READ:
             case COMOP_PROGRESS:
                 statusBar()->showMessage(tr("%1/%2").arg(e->value()).arg(e->maximum()));
                 break;
@@ -378,54 +384,83 @@ bool MainWindow::event(QEvent *event)
                     //照合もあれば続いて照合モードでFLASHの読み込みをする
                     if(toverify){
                         f_enablebuttons = false;
-                        thcom->startReadFlash(this);
+						thcom->startRead(this,
+										 e->parameter(0).toByteArray().size(),
+										 e->parameter(1).toByteArray().size());
                     }
+					else{
+						if(confighash.value("exectargetafterwriting").toBool()){
+							QMouseEvent* press = new QMouseEvent(QEvent::MouseButtonPress, ui->btnExecTarget->rect().center(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+							QMouseEvent* release = new QMouseEvent(QEvent::MouseButtonRelease, ui->btnExecTarget->rect().center(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+
+							QApplication::postEvent(ui->btnExecTarget, press);
+							QApplication::postEvent(ui->btnExecTarget, release);
+							//ui->btnExecTarget->toggle();
+						}
+					}
 				}
                 break;
-            case COMOP_READFLASH:
-			case COMOP_READEEPROM:
+			case COMOP_READ:
 				if(e->returnCode()<0){
                     console->append(CONSTXT_ERROR, e->errorMessage());
                 }
                 else{
-					readdata = e->parameter(0).toByteArray();
+					QByteArray flashimg, eepimg;
+					flashimg = e->parameter(0).toByteArray();
+					eepimg = e->parameter(1).toByteArray();
                     //照合モードのとき
                     if(toverify){
 						//書き込みデータと照合する
-						if(e->operation() == COMOP_READFLASH)
-							path = ui->edtFlashWrite->text();
-						else if(e->operation() == COMOP_READEEPROM)
-							path = ui->edtEEPWrite->text();
+						for(int opcnt=0; opcnt<2; opcnt++){
+							if(opcnt==1 && !ui->chkEEPWrite->isChecked())
+								continue;
 
-						wrotedata = loadImage(path);
-						cntunmatch = 0;
-						for(i=0; i<wrotedata.size(); i++){
-							if(readdata[i]!=wrotedata[i])
-								cntunmatch++;
-						}
-						if(cntunmatch==0){
-							//照合成功
-							console->append(CONSTXT_APPMESSAGE, tr("tr_msg_verify_success") + path);
-							//Flash照合後、EEPROMの照合もあれば続けて行う
-							if(e->operation() == COMOP_READFLASH && ui->chkEEPWrite->isChecked()){
-                                f_enablebuttons = false;
-								thcom->startReadEEPROM(this);
+							if(opcnt==0){
+								path = ui->edtFlashWrite->text();
+								readdata = flashimg;
 							}
-						}
-						else{
-							//照合失敗
-							console->append(CONSTXT_ERROR, tr("tr_msg_verify_failed") + path);
+							else if(opcnt==1){
+								path = ui->edtEEPWrite->text();
+								readdata = eepimg;
+							}
+
+							wrotedata = loadImage(path);
+							cntunmatch = 0;
+							for(i=0; i<wrotedata.size(); i++){
+								if(readdata[i]!=wrotedata[i])
+									cntunmatch++;
+							}
+							if(cntunmatch==0){
+								//照合成功
+								console->append(CONSTXT_APPMESSAGE, tr("tr_msg_verify_success") + path);
+
+								if(confighash.value("exectargetafterwriting").toBool()){
+									QMouseEvent* press = new QMouseEvent(QEvent::MouseButtonPress, ui->btnExecTarget->rect().center(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+									QMouseEvent* release = new QMouseEvent(QEvent::MouseButtonRelease, ui->btnExecTarget->rect().center(), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+
+									QApplication::postEvent(ui->btnExecTarget, press);
+									QApplication::postEvent(ui->btnExecTarget, release);
+								}
+							}
+							else{
+								//照合失敗
+								console->append(CONSTXT_ERROR, tr("tr_msg_verify_failed") + path);
+							}
 						}
                     }
                     //読み込みモードの時
-                    else{
-						if(e->operation() == COMOP_READFLASH)
+					else{
+						if(flashimg.size()>0){
 							path = ui->edtFlashRead->text();
-						else if(e->operation() == COMOP_READEEPROM)
+							r = saveIntelHex(path.toLocal8Bit().data(),
+									(unsigned char*)flashimg.data(), flashimg.size());
+						}
+						else if(eepimg.size()>0){
 							path = ui->edtEEPRead->text();
+							r = saveIntelHex(path.toLocal8Bit().data(),
+									(unsigned char*)eepimg.data(), eepimg.size());
+						}
 
-						r = saveIntelHex(path.toLocal8Bit().data(),
-									 (unsigned char*)readdata.data(), readdata.size());
                         console->append(CONSTXT_APPMESSAGE, tr("tr_msg_completed"));
                     }
                 }
@@ -609,7 +644,7 @@ void MainWindow::on_btnTestConnection_clicked()
 		//ブリッジバージョンを取得して接続確認
 		if(!thcom->bridgeVersion(&version)){
 			console->append(CONSTXT_ERROR, thcom->errorMessage());
-			console->append(CONSTXT_APPMESSAGE, QString("eltime:%1").arg(g_eltime));
+			//console->append(CONSTXT_APPMESSAGE, QString("eltime:%1").arg(g_eltime));
 			return;
 		}
 		console->append(CONSTXT_APPMESSAGE, QString("Bridge version:%1").arg(version));
@@ -641,7 +676,7 @@ void MainWindow::on_btnTestConnection_clicked()
         }
     }
 
-	console->append(CONSTXT_APPMESSAGE, QString("eltime:%1").arg(g_eltime));
+	//console->append(CONSTXT_APPMESSAGE, QString("eltime:%1").arg(g_eltime));
 }
 
 
@@ -777,7 +812,7 @@ void MainWindow::on_btnFlashRead_clicked()
     //スレッド開始
     toverify = false;   //照合モードではない
     console->append(CONSTXT_APPMESSAGE, tr("tr_msg_startreadflash"));
-    if(!thcom->startReadFlash(this)){
+	if(!thcom->startRead(this, targetspec.flashpagesize*targetspec.nflashpages, -1)){
 		console->append(CONSTXT_ERROR, thcom->errorMessage());
     }
     else{
@@ -807,7 +842,7 @@ void MainWindow::on_btnEEPRead_clicked()
 
     toverify = false;   //照合モードではない
     console->append(CONSTXT_APPMESSAGE, tr("tr_msg_startreadeep"));
-    if(!thcom->startReadEEPROM(this)){
+	if(!thcom->startRead(this, -1, targetspec.eeppagesize*targetspec.neeppages)){
 		console->append(CONSTXT_ERROR, thcom->errorMessage());
     }
     else{

@@ -5,13 +5,12 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#define VERSION 1
+#define VERSION 2
 #define _DEBUG 0
 
 //ボーレートを決めるための値
 //(CPUクロック/ビットレート)/(通常速16,倍速8) - 1
-#define UBRR_VAL 10	
-
+#define UBRR_VAL 10
 
 //ビット操作のマクロ定義
 #define	sbi(PORT,BIT) PORT |= _BV(BIT)	
@@ -21,6 +20,8 @@
 
 //グローバル変数
 //割り込みルーチンでも使えるようにするためvolatileを付け最適化を無効化する
+
+volatile uint8_t spidelay;
 
 //ソフトUART受信バッファ
 volatile uint8_t suarxbuf;
@@ -40,16 +41,12 @@ volatile int8_t suatxbit;
 */
 
 
-//ハードUART送信バッファ
-#define TXBUFSIZE 16  //必ず2の累乗にする
-#define TXBUFMAXMASK (TXBUFSIZE-1)
-volatile uint8_t txbuf[TXBUFSIZE];
-volatile uint8_t txinpos;
-volatile uint8_t txoutpos;
-
-volatile uint8_t spidelay;
-
-
+//ハードUART受信バッファ
+#define RXBUFSIZE 32
+volatile uint8_t rxbuf[RXBUFSIZE];
+volatile uint8_t rxreadpos, rxwritepos;
+volatile uint16_t cnttimeout;
+#define MAX_TIMEOUT 65535
 
 //外部割り込み1(INT1)
 //ソフトUART受信スタートビット検出
@@ -62,7 +59,7 @@ ISR(INT1_vect)
 	cbi(GIMSK, INT1);
 
 	//タイマ開始
-	TCNT0 = 15;	//パルスの真ん中で採取するためのウエイト
+	TCNT0 = 16;	//パルスの真ん中で採取するためのウエイト、OCR0A/2
 	TCCR0B |= 0b00000011;
 }
 
@@ -142,6 +139,14 @@ ISR(TIMER1_COMPA_vect)
 }
 
 
+//UART(ハードUART)受信完了
+ISR(USART_RX_vect)
+{
+	rxbuf[rxwritepos++] = UDR;
+	cnttimeout = MAX_TIMEOUT;
+}
+
+
 //4バイトSPIで交換する
 //USIは使わず任意のピンを使う
 void spi_exchange(uint8_t *poutdata, uint8_t *pindata)
@@ -152,7 +157,6 @@ void spi_exchange(uint8_t *poutdata, uint8_t *pindata)
 	uint8_t		indata;
 	uint8_t		delaycnt;
 
-	
 	bytecount = 4;
 	while(bytecount){
 		outdata = poutdata[4-bytecount];
@@ -168,7 +172,7 @@ void spi_exchange(uint8_t *poutdata, uint8_t *pindata)
 			//クロック上昇
 			sbi(PORTB, 4);
 			delaycnt = spidelay;
-			while(delaycnt) delaycnt--;
+			while(delaycnt) delaycnt--;//カウント1あたり3クロック=0.15us
 			//受信データ
 			indata <<= 1;
 			if(PIND & 0b00001000)
@@ -177,7 +181,7 @@ void spi_exchange(uint8_t *poutdata, uint8_t *pindata)
 			bitcount--;
 			cbi(PORTB, 4);
 			delaycnt = spidelay;
-			while(delaycnt) delaycnt--;
+			while(delaycnt) delaycnt--;	//カウント1あたり3クロック=0.15us
 		}
 		pindata[4-bytecount] = indata;
 		bytecount--;
@@ -214,21 +218,36 @@ uint8_t debugpos=0;
 #endif
 
 
+
 int main(void) 
 {
-	uint8_t rxbuf[4];
-	uint8_t rxpos;
+
+	//ハードUART送信バッファ
+	#define TXBUFSIZE 16  //必ず2の累乗にする
+	#define TXBUFMAXMASK (TXBUFSIZE-1)
+	uint8_t txbuf[TXBUFSIZE];
+	uint8_t txwritepos;
+	uint8_t txreadpos;
+
+
 	uint8_t cmdresp[4];
-	uint8_t spiin[4];
-	uint8_t uarterr;
+	uint8_t spibuf[4];
+	//uint8_t uarterr;
 
 	//ブロック転送関連
 	uint8_t blkmodetype;
-	uint16_t blkdatalen;  //ブロックのデータ長
-	uint16_t blkaddr;	//ブロック転送のオフセット位置
+	uint16_t nblks;
 	uint16_t cntblk;
+	uint16_t addr;			//アドレス
+	
+
+	
+	//ページ関係
+	uint16_t pagesize;		//1ページのサイズ
+	uint16_t pagepos;		//ページ内の走査位置
 
 
+reset:
 	//マスター割り込み禁止
 	cli();
 
@@ -266,8 +285,8 @@ TgtRest┃D5  B0┃B0
 	TCCR0A = 0b00000010;
 	TCCR0B = 0b00000000;
 
-	//タイマ0比較値(AVRのクロック/UART速度/プリスケーラ)
-	OCR0A = 31;
+	//タイマ0比較値(AVRのクロック/ソフトUART速度/プリスケーラ)
+	OCR0A = 32;
 	TCNT0 = 0;
 	
 	//TCCR1
@@ -320,7 +339,7 @@ TgtRest┃D5  B0┃B0
 	//2	データビット長選択2
 	//1	受信追加データビット(9ビットフレームの時使用)
 	//0	送信追加データビット(9ビットフレームの時使用)
-	UCSRB = 0b00011000;
+	UCSRB = 0b10011000;
 	//76 動作モード選択(00:非同期(調歩), 01:同期, 11:SPI)
 	//54 パリティ選択(00:パリティなし, 10:偶数, 11:奇数)
 	//3	 ストップビット(0:1bit, 1:2bit)
@@ -335,40 +354,30 @@ TgtRest┃D5  B0┃B0
 	//////////////////////////////////////////////////////////////////////
 	
 	//諸変数初期化
-	txinpos = 0;
-	txoutpos = 0;
-	rxpos = 0;
+	txwritepos = 0;
+	txreadpos = 0;
+	rxwritepos = 0;
+	rxreadpos = 0;
+	/*
 	rxbuf[0] = 0x55;
 	rxbuf[1] = 0x55;
 	cmdresp[0] = 0xFF;
 	cmdresp[1] = 0;		//実行時はコマンド番号が入る
 	cmdresp[2] = 0;
 	cmdresp[3] = 0;
+	*/
 	suarxbit = -1;
 	suatxbit = -1;
 	blkmodetype = 0;
-	cntblk = 0;
-	blkdatalen = 0;
-	blkaddr = 0;
-	uarterr = 0;
 	spidelay = 2;
-
-	//CPUプリスケーラ
-	//if(!(PIND & (1<<PIND6))){
-	if( (PIND & (1<<PIND6)) == 0 ){
-		//起動時はプルアップされている
-		//低速モードピンがGNDに接続されていれば低速モードへ移行
-		CLKPR = 1<<CLKPCE;	//クロック変更許可
-		//CLKPR = 3;			//1/2^3 = 8分周
-		CLKPR = 0b0110;		//64分周
-	}
+	
 
 	//マスター割り込み許可
 	sei();
 	
 #if _DEBUG	
 	//testdebug
-	spi_exchange(rxbuf, spiin);
+	spi_exchange(rxbuf, cmdresp);
 	
 	
 #endif
@@ -381,25 +390,25 @@ TgtRest┃D5  B0┃B0
 		//UART送信
 		
 		//ブリッジからホストへ送信
-		if(txinpos != txoutpos){
+		if(txwritepos != txreadpos){
 			//UART送信レジスタ空き待ちフラグ(UDRE)
 			if(bit_is_set(UCSRA,UDRE)){
 				//送信データセット
 				//同時に送信が開始され、UDREは解除される
-				UDR = txbuf[txoutpos++];
-				txoutpos &= TXBUFMAXMASK; //if(txoutpos==TXBUFSIZE) txoutpos = 0;と同じ効果
+				UDR = txbuf[txreadpos++];
+				txreadpos &= TXBUFMAXMASK; //if(txoutpos==TXBUFSIZE) txoutpos = 0;と同じ効果
 			}
 		}
 
 		//ターゲットから受信したソフトUARTのデータがあればホストへ送出するバッファに入れる
 		if(suarxbit==10){
 			suarxbit = -1;
-			txbuf[txinpos] = 0xFF;
-			txbuf[txinpos+1] = 0xF2;
-			txbuf[txinpos+2] = suarxbuf;
-			txbuf[txinpos+3] = 0;
-			txinpos += 4;
-			txinpos &= TXBUFMAXMASK; //if(txinpos==TXBUFSIZE) txinpos = 0;と同じ効果
+			txbuf[txwritepos] = 0xFF;
+			txbuf[txwritepos+1] = 0xF2;
+			txbuf[txwritepos+2] = suarxbuf;
+			txbuf[txwritepos+3] = 0;
+			txwritepos += 4;
+			txwritepos &= TXBUFMAXMASK; //if(txinpos==TXBUFSIZE) txinpos = 0;と同じ効果
 		}
 
 
@@ -411,95 +420,106 @@ TgtRest┃D5  B0┃B0
 			switch(blkmodetype){
 			case 0xC0:
 			case 0xC2:
-				//ページ設定(書き込みは書き込み命令を使う)
-				if(UCSRA & 0b10000000){	//UART受信データがあるか
+				//連続書き込み
+				if(rxreadpos < rxwritepos){
+					//ページ設定
 					if(blkmodetype==0xC0)	//FLASHページ設定
-						rxbuf[0] = (cntblk&1)==0? 0x40: 0x48;
+						spibuf[0] = (rxreadpos&1)==0? 0x40: 0x48;
 					else if(blkmodetype==0xC2)	//EEPROMページ設定
-						rxbuf[0] = 0xC1;
-					rxbuf[1] = blkaddr>>8;
-					rxbuf[2] = blkaddr&0xFF;
-					rxbuf[3] = UDR; //DBGUDR; //UDR;
+						spibuf[0] = 0xC1;
+					spibuf[1] = pagepos>>8;
+					spibuf[2] = pagepos&0xFF;
+					spibuf[3] = rxbuf[rxreadpos]; //DBGUDR; //UDR;
 					//SPI
-					spi_exchange(rxbuf, spiin);
+					spi_exchange(spibuf, cmdresp);
 				
-					//アドレスを進める
-					if( (blkmodetype==0xC0 && (cntblk&1)==1) || blkmodetype==0xC2){
-						blkaddr++;
+					//ページ内位置を進める
+					if( (blkmodetype==0xC0 && (rxreadpos&1)==1) || blkmodetype==0xC2){
+						pagepos++;
 					}
-					//カウンタを進め、ブロック終了判定
-					cntblk++;
-					if(cntblk == blkdatalen){
+					//ページ端なら書き込み
+					if(pagepos == pagesize){
+						pagepos = 0;
+						if(blkmodetype==0xC0)
+							spibuf[0] = 0x4C;	//Flash書き込み
+						else if(blkmodetype==0xC2)
+							spibuf[0] = 0xC2;	//EEPROM書き込み
+						spibuf[1] = addr>>8;
+						spibuf[2] = addr&0xFF;
+						spibuf[3] = 0;
+						spi_exchange(spibuf, cmdresp);
+						addr += pagesize;
+						_delay_ms(5);
+					}
+					
+					//バッファ読み込み位置を進めて、バッファ端ならホストへ通知
+					rxreadpos++;
+					if(rxreadpos==RXBUFSIZE){
+						rxreadpos=0;
+						rxwritepos=0;
+						txbuf[txwritepos++] = 0xFF;
+						txbuf[txwritepos++] = blkmodetype;
+						txbuf[txwritepos++] = (addr>>8)&0xFF;
+						txbuf[txwritepos++] = addr&0xFF;
+						txwritepos &= TXBUFMAXMASK;
+						
+						//ブロックカウンタを進め、ブロック終了判定
+						//終了判定はページではなくブロックで行っている
+						//現時点(ver2)でAVRのROMサイズはいずれもブロックサイズ(32)の倍数なので問題ないと思われる
+						cntblk++;
+					}
+					if(cntblk == nblks){
 						blkmodetype = 0;
 					}
+					cnttimeout = MAX_TIMEOUT;
 				}
-				//ホストへの戻りはない
 				break;
 			case 0xC1:
 			case 0xC3:
-				//flash/eeprom読み込み
-				if(txinpos == txoutpos){ //コマンドレスポンスを優先する(txbufが空になってから読み込み開始)
-					do{
-						//ここではrxbufは受信用ではなくSPIのバッファとして使い回している
-						if(blkmodetype==0xC1)
-							rxbuf[0] = (cntblk&1)==0? 0x20: 0x28;
-						else if(blkmodetype==0xC3)
-							rxbuf[0] = 0xA0;
-						rxbuf[1] = blkaddr>>8;	//アドレス上位
-						rxbuf[2] = blkaddr&0xFF;	//アドレス下位
-						rxbuf[3] = 0;
-						//SPI
-						spi_exchange(rxbuf, spiin);
-						//アドレスを進める
-						if( (blkmodetype==0xC1 && (cntblk&1)==1) || blkmodetype==0xC3){
-							blkaddr++;
-						}
-						//ホストへ戻し
-						while(bit_is_clear(UCSRA,UDRE));
-						UDR = spiin[3];
+				//flash/eeprom連続読み込み
+				if(txwritepos == txreadpos){ //コマンドレスポンスを優先する(送信バッファが空になってから読み込み開始)
+					if(blkmodetype==0xC1)
+						spibuf[0] = (rxreadpos&1)==0? 0x20: 0x28; //rxreadposはインデックス代わり
+					else if(blkmodetype==0xC3)
+						spibuf[0] = 0xA0;
+					spibuf[1] = addr>>8;	//アドレス上位
+					spibuf[2] = addr&0xFF;	//アドレス下位
+					spibuf[3] = 0;
+						
+					//SPI
+					spi_exchange(spibuf, cmdresp);
+					//アドレスを進める
+					if( (blkmodetype==0xC1 && (rxreadpos&1)==1) || blkmodetype==0xC3){
+						addr++;
+					}
+						
+					//ホストへ戻し
+					while(bit_is_clear(UCSRA,UDRE));
+					UDR = cmdresp[3];
+						
+					//読み込みはブロック単位ではないがカウンタとして使う
+					rxreadpos++;
+					if(rxreadpos==RXBUFSIZE){
 						cntblk++;
-					}while(cntblk!=blkdatalen);
-					blkmodetype = 0;
+						rxreadpos = 0;
+					}
+					//終了判定
+					if(cntblk == nblks)
+						blkmodetype = 0;
+					cnttimeout = MAX_TIMEOUT;
 				}
 				break;
 			}
 		}
 		//コマンド転送では4バイト単位で処理する
-		else if(blkmodetype==0){
-			//UART受信完了待ち	
-#if _DEBUG
-			rxbuf[rxpos++] = DBGUDR;
-#else
-			if(bit_is_set(UCSRA,RXC)){
-				//受信バッファ異常フラグ
-				uarterr |= (UCSRA & 0b00011000);	//bit4=フレーム異常, bit3=オーバーラン
-				//UDRを読むと自動的に受信完了フラグは消える
-				rxbuf[rxpos++] = UDR;
-			}
-#endif
+		else{	//blkmodetype==0
 			//4バイト受信したら処理する
-			if(rxpos==4){
-				rxpos=0;
-				if(uarterr){
-					txbuf[txinpos++] = uarterr;
-					txbuf[txinpos++] = uarterr;
-					txbuf[txinpos++] = uarterr;
-					txbuf[txinpos++] = uarterr;
-					txinpos &= TXBUFMAXMASK;
-				}
-				//ターゲットコマンド、ただしピン変化割込み(GIMSK)を優先
-				else if(rxbuf[0]!=0xFF && GIMSK==0){
+			if(rxwritepos==4){
+				rxwritepos=0;
+				if(rxbuf[0]!=0xFF && GIMSK==0){
 					//SPIでターゲットと4バイト交換する
-					/*
-					spi_exchange(rxbuf, &txbuf[txinpos]);
-					txinpos += 4;
-					*/
-					spi_exchange(rxbuf, spiin);
-					txbuf[txinpos++] = 0x6F;
-					txbuf[txinpos++] = spiin[1];
-					txbuf[txinpos++] = spiin[2];
-					txbuf[txinpos++] = spiin[3];
-					txinpos &= TXBUFMAXMASK; //if(txinpos==TXBUFSIZE) txinpos = 0;
+					spi_exchange((uint8_t*)rxbuf, cmdresp);
+					cmdresp[0] = 0x6F;
 				}
 				//ブリッジコマンド
 				else{
@@ -511,6 +531,7 @@ TgtRest┃D5  B0┃B0
 					//コマンド振り分け
 					switch(rxbuf[1]){
 					case 0:	//null command
+						cmdresp[0] = 0xFE; //0xFEは返信なしの意味
 						break;
 					case 6:
 						//ターゲットリセットピン切り替え
@@ -566,23 +587,34 @@ TgtRest┃D5  B0┃B0
 					case 20: //0x14
 						cmdresp[2] = VERSION;
 						break;
+					case 21:
+						//SPIディレイ設定
+						spidelay = rxbuf[2];
+						break;
 					case 0xC0:
 					case 0xC1:
 					case 0xC2:
 					case 0xC3:
-						//ブロック転送モード設定
+						//ブロック転送モード開始
 						blkmodetype = rxbuf[1];
-						blkaddr = rxbuf[2];
-						blkaddr <<= 8;
-						blkaddr += rxbuf[3];
+						if(rxbuf[1] == 0xC0)
+							pagesize /= 2; //flash書き込みはword単位
+						nblks = rxbuf[2];
+						nblks <<= 8;
+						nblks += rxbuf[3];
+						
+						addr = 0;
+						rxwritepos = 0;
+						rxreadpos = 0;
 						cntblk = 0;
+						pagepos = 0;
 						break;
 					case 0xCE:
-						//ブロック転送の長さ
+						//ページサイズ設定
 						//rxbuf[2]に上位8bit、[3]に下位8bit
-						blkdatalen = rxbuf[2];
-						blkdatalen <<= 8;
-						blkdatalen += rxbuf[3];
+						pagesize = rxbuf[2];
+						pagesize <<= 8;
+						pagesize += rxbuf[3];
 						break;
 					case 0xF1:
 						//ホストからターゲットへソフトUARTでデータ送信
@@ -602,22 +634,33 @@ TgtRest┃D5  B0┃B0
 						break;
 					case 0xFF:
 						//padding command
+						//no response
+						cmdresp[0] = 0xFE; //0xFEは返信なしの意味
 						break;
 					}
-
-					//レスポンス
-					//NULLコマンドとパディングコマンドを除く
-					//実際の送信はメインループ内
-					if(rxbuf[1]!=0 && rxbuf[1]!=0xFF){
-						txbuf[txinpos++] = cmdresp[0];
-						txbuf[txinpos++] = cmdresp[1];
-						txbuf[txinpos++] = cmdresp[2];
-						txbuf[txinpos++] = cmdresp[3];
-						txinpos &= TXBUFMAXMASK;
-					}
 				} //if(rxbuf[0]==0xFF)
+				
+				//レスポンス
+				//NULLコマンドとパディングコマンドを除く
+				//実際の送信はメインループ内
+				if(cmdresp[0] != 0xFE){
+					txbuf[txwritepos++] = cmdresp[0];
+					txbuf[txwritepos++] = cmdresp[1];
+					txbuf[txwritepos++] = cmdresp[2];
+					txbuf[txwritepos++] = cmdresp[3];
+					txwritepos &= TXBUFMAXMASK;
+				}
 			} //if(rxpos==4)
 		} // if(!blockmode)
+		
+		//4バイト受信できないときは受信バッファをリセットする
+		//ウォッチドッグタイマの代わり
+		cnttimeout--;
+		if(cnttimeout==0){
+			rxwritepos = 0;
+			rxreadpos = 0;
+			blkmodetype = 0;
+		}
 		
 	}
 }
