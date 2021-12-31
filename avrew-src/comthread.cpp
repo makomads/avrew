@@ -850,7 +850,7 @@ QByteArray ComThread::receiveTargetMessage()
 
 	while(1){
         //1単位読む
-		r = io->receive(in, 4);
+        r = io->receive(in, 4, 1);
 		if(r==4){
 			//データが受信できたとき
 			//ターゲットメッセージレスポンスの場合
