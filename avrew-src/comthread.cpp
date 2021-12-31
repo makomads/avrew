@@ -492,6 +492,7 @@ void ComThread::runTarget()
 	int inquecount;
 	QByteArray senddata, recvdata;
 
+	msleep(100);
 	while(continue_loop){
 		//送信
 		if(!tgtsendbuf.isEmpty()){
