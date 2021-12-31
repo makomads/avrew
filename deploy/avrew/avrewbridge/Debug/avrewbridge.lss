@@ -1,0 +1,1655 @@
+
+avrewbridge.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000078  00000000  00000000  000000b4  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00000078  00000680  2**0
+                  ALLOC
+  2 .bss          00000029  00800060  00800060  0000085a  2**0
+                  ALLOC
+  3 .comment      0000002f  00000000  00000000  0000085a  2**0
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000048  00000000  00000000  00000889  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000b83  00000000  00000000  000008d1  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000578  00000000  00000000  00001454  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000008c7  00000000  00000000  000019cc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  000000d8  00000000  00000000  00002294  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000163  00000000  00000000  0000236c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    00000524  00000000  00000000  000024cf  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000038  00000000  00000000  000029f3  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .text         00000002  000007a4  000007a4  00000858  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 13 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00002a2c  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 14 .text.__vector_2 00000030  00000774  00000774  00000828  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 15 .text.__vector_13 000000b8  000005cc  000005cc  00000680  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 16 .text.__vector_4 0000005c  00000684  00000684  00000738  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 17 .text.__vector_7 00000046  0000072e  0000072e  000007e2  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 18 .text.spi_exchange 0000004e  000006e0  000006e0  00000794  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 19 .text.main    00000554  00000078  00000078  0000012c  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	15 c0       	rjmp	.+42     	; 0x2c <__ctors_end>
+   2:	d0 c3       	rjmp	.+1952   	; 0x7a4 <__bad_interrupt>
+   4:	b7 c3       	rjmp	.+1902   	; 0x774 <__vector_2>
+   6:	ce c3       	rjmp	.+1948   	; 0x7a4 <__bad_interrupt>
+   8:	3d c3       	rjmp	.+1658   	; 0x684 <__vector_4>
+   a:	cc c3       	rjmp	.+1944   	; 0x7a4 <__bad_interrupt>
+   c:	cb c3       	rjmp	.+1942   	; 0x7a4 <__bad_interrupt>
+   e:	8f c3       	rjmp	.+1822   	; 0x72e <__vector_7>
+  10:	c9 c3       	rjmp	.+1938   	; 0x7a4 <__bad_interrupt>
+  12:	c8 c3       	rjmp	.+1936   	; 0x7a4 <__bad_interrupt>
+  14:	c7 c3       	rjmp	.+1934   	; 0x7a4 <__bad_interrupt>
+  16:	c6 c3       	rjmp	.+1932   	; 0x7a4 <__bad_interrupt>
+  18:	c5 c3       	rjmp	.+1930   	; 0x7a4 <__bad_interrupt>
+  1a:	d8 c2       	rjmp	.+1456   	; 0x5cc <__vector_13>
+  1c:	c3 c3       	rjmp	.+1926   	; 0x7a4 <__bad_interrupt>
+  1e:	c2 c3       	rjmp	.+1924   	; 0x7a4 <__bad_interrupt>
+  20:	c1 c3       	rjmp	.+1922   	; 0x7a4 <__bad_interrupt>
+  22:	c0 c3       	rjmp	.+1920   	; 0x7a4 <__bad_interrupt>
+  24:	bf c3       	rjmp	.+1918   	; 0x7a4 <__bad_interrupt>
+
+00000026 <.dinit>:
+  26:	00 60       	ori	r16, 0x00	; 0
+  28:	00 89       	ldd	r16, Z+16	; 0x10
+  2a:	80 00       	.word	0x0080	; ????
+
+0000002c <__ctors_end>:
+  2c:	11 24       	eor	r1, r1
+  2e:	1f be       	out	0x3f, r1	; 63
+  30:	cf ed       	ldi	r28, 0xDF	; 223
+  32:	cd bf       	out	0x3d, r28	; 61
+
+00000034 <__do_copy_data>:
+  34:	e6 e2       	ldi	r30, 0x26	; 38
+  36:	f0 e0       	ldi	r31, 0x00	; 0
+  38:	40 e0       	ldi	r20, 0x00	; 0
+  3a:	17 c0       	rjmp	.+46     	; 0x6a <__do_clear_bss+0x8>
+  3c:	b5 91       	lpm	r27, Z+
+  3e:	a5 91       	lpm	r26, Z+
+  40:	35 91       	lpm	r19, Z+
+  42:	25 91       	lpm	r18, Z+
+  44:	05 91       	lpm	r16, Z+
+  46:	07 fd       	sbrc	r16, 7
+  48:	0c c0       	rjmp	.+24     	; 0x62 <__do_clear_bss>
+  4a:	95 91       	lpm	r25, Z+
+  4c:	85 91       	lpm	r24, Z+
+  4e:	ef 01       	movw	r28, r30
+  50:	f9 2f       	mov	r31, r25
+  52:	e8 2f       	mov	r30, r24
+  54:	05 90       	lpm	r0, Z+
+  56:	0d 92       	st	X+, r0
+  58:	a2 17       	cp	r26, r18
+  5a:	b3 07       	cpc	r27, r19
+  5c:	d9 f7       	brne	.-10     	; 0x54 <__SREG__+0x15>
+  5e:	fe 01       	movw	r30, r28
+  60:	04 c0       	rjmp	.+8      	; 0x6a <__do_clear_bss+0x8>
+
+00000062 <__do_clear_bss>:
+  62:	1d 92       	st	X+, r1
+  64:	a2 17       	cp	r26, r18
+  66:	b3 07       	cpc	r27, r19
+  68:	e1 f7       	brne	.-8      	; 0x62 <__do_clear_bss>
+  6a:	eb 32       	cpi	r30, 0x2B	; 43
+  6c:	f4 07       	cpc	r31, r20
+  6e:	31 f7       	brne	.-52     	; 0x3c <__do_copy_data+0x8>
+  70:	03 d0       	rcall	.+6      	; 0x78 <_etext>
+  72:	00 c0       	rjmp	.+0      	; 0x74 <_exit>
+
+00000074 <_exit>:
+  74:	f8 94       	cli
+
+00000076 <__stop_program>:
+  76:	ff cf       	rjmp	.-2      	; 0x76 <__stop_program>
+
+Disassembly of section .text:
+
+000007a4 <__bad_interrupt>:
+ 7a4:	2d cc       	rjmp	.-1958   	; 0x0 <__TEXT_REGION_ORIGIN__>
+
+Disassembly of section .text.__vector_2:
+
+00000774 <__vector_2>:
+#define MAX_TIMEOUT 65535
+
+//外部割り込み1(INT1)
+//ソフトUART受信スタートビット検出
+ISR(INT1_vect)
+{
+ 774:	1f 92       	push	r1
+ 776:	0f 92       	push	r0
+ 778:	0f b6       	in	r0, 0x3f	; 63
+ 77a:	0f 92       	push	r0
+ 77c:	11 24       	eor	r1, r1
+ 77e:	8f 93       	push	r24
+	suarxbuf = 0;
+ 780:	10 92 85 00 	sts	0x0085, r1	; 0x800085 <suarxbuf>
+	suarxbit = 0;
+ 784:	10 92 80 00 	sts	0x0080, r1	; 0x800080 <suarxbit>
+	
+	//ピン変化割り込み不許可
+	cbi(GIMSK, INT1);
+ 788:	8b b7       	in	r24, 0x3b	; 59
+ 78a:	8f 77       	andi	r24, 0x7F	; 127
+ 78c:	8b bf       	out	0x3b, r24	; 59
+
+	//タイマ開始
+	TCNT0 = 16;	//パルスの真ん中で採取するためのウエイト、OCR0A/2
+ 78e:	80 e1       	ldi	r24, 0x10	; 16
+ 790:	82 bf       	out	0x32, r24	; 50
+	TCCR0B |= 0b00000011;
+ 792:	83 b7       	in	r24, 0x33	; 51
+ 794:	83 60       	ori	r24, 0x03	; 3
+ 796:	83 bf       	out	0x33, r24	; 51
+}
+ 798:	8f 91       	pop	r24
+ 79a:	0f 90       	pop	r0
+ 79c:	0f be       	out	0x3f, r0	; 63
+ 79e:	0f 90       	pop	r0
+ 7a0:	1f 90       	pop	r1
+ 7a2:	18 95       	reti
+
+Disassembly of section .text.__vector_13:
+
+000005cc <__vector_13>:
+
+
+//タイマー0比較A一致
+//ソフトUART受信データビット検出
+ISR(TIMER0_COMPA_vect)
+{	
+ 5cc:	1f 92       	push	r1
+ 5ce:	0f 92       	push	r0
+ 5d0:	0f b6       	in	r0, 0x3f	; 63
+ 5d2:	0f 92       	push	r0
+ 5d4:	11 24       	eor	r1, r1
+ 5d6:	8f 93       	push	r24
+ 5d8:	9f 93       	push	r25
+	uint8_t f_bitset;
+	
+	//ピンのhigh, low取得
+	f_bitset = bit_is_set(PIND,3);
+ 5da:	80 b3       	in	r24, 0x10	; 16
+ 5dc:	88 70       	andi	r24, 0x08	; 8
+	
+	//スタートビットを再確認し不正なスタートビットを検出
+	if(suarxbit == 0 && f_bitset){
+ 5de:	90 91 80 00 	lds	r25, 0x0080	; 0x800080 <suarxbit>
+ 5e2:	91 11       	cpse	r25, r1
+ 5e4:	0f c0       	rjmp	.+30     	; 0x604 <__vector_13+0x38>
+ 5e6:	88 23       	and	r24, r24
+ 5e8:	e1 f1       	breq	.+120    	; 0x662 <__vector_13+0x96>
+		//タイマ停止
+		TCCR0B &= 0b11111000;
+ 5ea:	83 b7       	in	r24, 0x33	; 51
+ 5ec:	88 7f       	andi	r24, 0xF8	; 248
+ 5ee:	83 bf       	out	0x33, r24	; 51
+		//ピン変化割り込み許可
+		sbi(EIFR, INTF1);	//割り込みフラグ強制解除
+ 5f0:	8a b7       	in	r24, 0x3a	; 58
+ 5f2:	80 68       	ori	r24, 0x80	; 128
+ 5f4:	8a bf       	out	0x3a, r24	; 58
+		sbi(GIMSK, INT1);
+ 5f6:	8b b7       	in	r24, 0x3b	; 59
+ 5f8:	80 68       	ori	r24, 0x80	; 128
+ 5fa:	8b bf       	out	0x3b, r24	; 59
+		suarxbit = -1;
+ 5fc:	8f ef       	ldi	r24, 0xFF	; 255
+ 5fe:	80 93 80 00 	sts	0x0080, r24	; 0x800080 <suarxbit>
+		return;
+ 602:	39 c0       	rjmp	.+114    	; 0x676 <__vector_13+0xaa>
+	}
+	//ストップビット
+	else if(suarxbit == 9){
+ 604:	90 91 80 00 	lds	r25, 0x0080	; 0x800080 <suarxbit>
+ 608:	99 30       	cpi	r25, 0x09	; 9
+ 60a:	79 f4       	brne	.+30     	; 0x62a <__vector_13+0x5e>
+		//タイマ停止
+		TCCR0B &= 0b11111000;
+ 60c:	93 b7       	in	r25, 0x33	; 51
+ 60e:	98 7f       	andi	r25, 0xF8	; 248
+ 610:	93 bf       	out	0x33, r25	; 51
+		//ピン変化割り込み許可
+		sbi(EIFR, INTF1);	//割り込みフラグ強制解除
+ 612:	9a b7       	in	r25, 0x3a	; 58
+ 614:	90 68       	ori	r25, 0x80	; 128
+ 616:	9a bf       	out	0x3a, r25	; 58
+		sbi(GIMSK, INT1);
+ 618:	9b b7       	in	r25, 0x3b	; 59
+ 61a:	90 68       	ori	r25, 0x80	; 128
+ 61c:	9b bf       	out	0x3b, r25	; 59
+		
+		//不正なストップビット検出
+		if(!f_bitset){
+ 61e:	81 11       	cpse	r24, r1
+ 620:	10 c0       	rjmp	.+32     	; 0x642 <__vector_13+0x76>
+			suarxbit = -1;	//こうするとメインループでホストに送信しない
+ 622:	8f ef       	ldi	r24, 0xFF	; 255
+ 624:	80 93 80 00 	sts	0x0080, r24	; 0x800080 <suarxbit>
+			return;
+ 628:	26 c0       	rjmp	.+76     	; 0x676 <__vector_13+0xaa>
+		}
+	}
+	//データビット
+	else{
+		suarxbuf >>= 1;
+ 62a:	90 91 85 00 	lds	r25, 0x0085	; 0x800085 <suarxbuf>
+ 62e:	96 95       	lsr	r25
+ 630:	90 93 85 00 	sts	0x0085, r25	; 0x800085 <suarxbuf>
+		if(f_bitset){
+ 634:	88 23       	and	r24, r24
+ 636:	29 f0       	breq	.+10     	; 0x642 <__vector_13+0x76>
+			suarxbuf |= 0b10000000;
+ 638:	80 91 85 00 	lds	r24, 0x0085	; 0x800085 <suarxbuf>
+ 63c:	80 68       	ori	r24, 0x80	; 128
+ 63e:	80 93 85 00 	sts	0x0085, r24	; 0x800085 <suarxbuf>
+		}
+	}
+	
+	//次のビットへ
+	suarxbit++;
+ 642:	80 91 80 00 	lds	r24, 0x0080	; 0x800080 <suarxbit>
+ 646:	8f 5f       	subi	r24, 0xFF	; 255
+ 648:	80 93 80 00 	sts	0x0080, r24	; 0x800080 <suarxbit>
+ 64c:	14 c0       	rjmp	.+40     	; 0x676 <__vector_13+0xaa>
+		return;
+	}
+	//ストップビット
+	else if(suarxbit == 9){
+		//タイマ停止
+		TCCR0B &= 0b11111000;
+ 64e:	83 b7       	in	r24, 0x33	; 51
+ 650:	88 7f       	andi	r24, 0xF8	; 248
+ 652:	83 bf       	out	0x33, r24	; 51
+		//ピン変化割り込み許可
+		sbi(EIFR, INTF1);	//割り込みフラグ強制解除
+ 654:	8a b7       	in	r24, 0x3a	; 58
+ 656:	80 68       	ori	r24, 0x80	; 128
+ 658:	8a bf       	out	0x3a, r24	; 58
+		sbi(GIMSK, INT1);
+ 65a:	8b b7       	in	r24, 0x3b	; 59
+ 65c:	80 68       	ori	r24, 0x80	; 128
+ 65e:	8b bf       	out	0x3b, r24	; 59
+ 660:	e0 cf       	rjmp	.-64     	; 0x622 <__vector_13+0x56>
+		sbi(GIMSK, INT1);
+		suarxbit = -1;
+		return;
+	}
+	//ストップビット
+	else if(suarxbit == 9){
+ 662:	80 91 80 00 	lds	r24, 0x0080	; 0x800080 <suarxbit>
+ 666:	89 30       	cpi	r24, 0x09	; 9
+ 668:	91 f3       	breq	.-28     	; 0x64e <__vector_13+0x82>
+			return;
+		}
+	}
+	//データビット
+	else{
+		suarxbuf >>= 1;
+ 66a:	80 91 85 00 	lds	r24, 0x0085	; 0x800085 <suarxbuf>
+ 66e:	86 95       	lsr	r24
+ 670:	80 93 85 00 	sts	0x0085, r24	; 0x800085 <suarxbuf>
+ 674:	e6 cf       	rjmp	.-52     	; 0x642 <__vector_13+0x76>
+		}
+	}
+	
+	//次のビットへ
+	suarxbit++;
+}
+ 676:	9f 91       	pop	r25
+ 678:	8f 91       	pop	r24
+ 67a:	0f 90       	pop	r0
+ 67c:	0f be       	out	0x3f, r0	; 63
+ 67e:	0f 90       	pop	r0
+ 680:	1f 90       	pop	r1
+ 682:	18 95       	reti
+
+Disassembly of section .text.__vector_4:
+
+00000684 <__vector_4>:
+
+
+//タイマー1比較A一致
+//ソフトUART送信
+ISR(TIMER1_COMPA_vect)
+{
+ 684:	1f 92       	push	r1
+ 686:	0f 92       	push	r0
+ 688:	0f b6       	in	r0, 0x3f	; 63
+ 68a:	0f 92       	push	r0
+ 68c:	11 24       	eor	r1, r1
+ 68e:	8f 93       	push	r24
+	//ストップビット
+	if(suatxbit==9){
+ 690:	80 91 84 00 	lds	r24, 0x0084	; 0x800084 <suatxbit>
+ 694:	89 30       	cpi	r24, 0x09	; 9
+ 696:	11 f4       	brne	.+4      	; 0x69c <__vector_4+0x18>
+		sbi(PORTD,4);
+ 698:	94 9a       	sbi	0x12, 4	; 18
+ 69a:	17 c0       	rjmp	.+46     	; 0x6ca <__vector_4+0x46>
+	}
+	//送出完了
+	else if(suatxbit==10){
+ 69c:	80 91 84 00 	lds	r24, 0x0084	; 0x800084 <suatxbit>
+ 6a0:	8a 30       	cpi	r24, 0x0A	; 10
+ 6a2:	39 f4       	brne	.+14     	; 0x6b2 <__vector_4+0x2e>
+		//タイマ停止する
+		TCCR1B &= 0b11111000;
+ 6a4:	8e b5       	in	r24, 0x2e	; 46
+ 6a6:	88 7f       	andi	r24, 0xF8	; 248
+ 6a8:	8e bd       	out	0x2e, r24	; 46
+		suatxbit = -1;
+ 6aa:	8f ef       	ldi	r24, 0xFF	; 255
+ 6ac:	80 93 84 00 	sts	0x0084, r24	; 0x800084 <suatxbit>
+		return;
+ 6b0:	11 c0       	rjmp	.+34     	; 0x6d4 <__vector_4+0x50>
+	}
+	//データビット
+	else{
+		if(suatxbuf & 1)
+ 6b2:	80 91 81 00 	lds	r24, 0x0081	; 0x800081 <suatxbuf>
+ 6b6:	80 ff       	sbrs	r24, 0
+ 6b8:	02 c0       	rjmp	.+4      	; 0x6be <__vector_4+0x3a>
+			sbi(PORTD,4);
+ 6ba:	94 9a       	sbi	0x12, 4	; 18
+ 6bc:	01 c0       	rjmp	.+2      	; 0x6c0 <__vector_4+0x3c>
+		else
+			cbi(PORTD,4);
+ 6be:	94 98       	cbi	0x12, 4	; 18
+		suatxbuf >>= 1;			
+ 6c0:	80 91 81 00 	lds	r24, 0x0081	; 0x800081 <suatxbuf>
+ 6c4:	86 95       	lsr	r24
+ 6c6:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <suatxbuf>
+	}
+	
+	//次のビットへ
+	suatxbit++;
+ 6ca:	80 91 84 00 	lds	r24, 0x0084	; 0x800084 <suatxbit>
+ 6ce:	8f 5f       	subi	r24, 0xFF	; 255
+ 6d0:	80 93 84 00 	sts	0x0084, r24	; 0x800084 <suatxbit>
+}
+ 6d4:	8f 91       	pop	r24
+ 6d6:	0f 90       	pop	r0
+ 6d8:	0f be       	out	0x3f, r0	; 63
+ 6da:	0f 90       	pop	r0
+ 6dc:	1f 90       	pop	r1
+ 6de:	18 95       	reti
+
+Disassembly of section .text.__vector_7:
+
+0000072e <__vector_7>:
+
+
+//UART(ハードUART)受信完了
+ISR(USART_RX_vect)
+{
+ 72e:	1f 92       	push	r1
+ 730:	0f 92       	push	r0
+ 732:	0f b6       	in	r0, 0x3f	; 63
+ 734:	0f 92       	push	r0
+ 736:	11 24       	eor	r1, r1
+ 738:	8f 93       	push	r24
+ 73a:	9f 93       	push	r25
+ 73c:	ef 93       	push	r30
+ 73e:	ff 93       	push	r31
+	rxbuf[rxwritepos++] = UDR;
+ 740:	e0 91 88 00 	lds	r30, 0x0088	; 0x800088 <rxwritepos>
+ 744:	81 e0       	ldi	r24, 0x01	; 1
+ 746:	8e 0f       	add	r24, r30
+ 748:	80 93 88 00 	sts	0x0088, r24	; 0x800088 <rxwritepos>
+ 74c:	f0 e0       	ldi	r31, 0x00	; 0
+ 74e:	8c b1       	in	r24, 0x0c	; 12
+ 750:	e0 5a       	subi	r30, 0xA0	; 160
+ 752:	ff 4f       	sbci	r31, 0xFF	; 255
+ 754:	80 83       	st	Z, r24
+	cnttimeout = MAX_TIMEOUT;
+ 756:	8f ef       	ldi	r24, 0xFF	; 255
+ 758:	9f ef       	ldi	r25, 0xFF	; 255
+ 75a:	90 93 83 00 	sts	0x0083, r25	; 0x800083 <cnttimeout+0x1>
+ 75e:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <cnttimeout>
+}
+ 762:	ff 91       	pop	r31
+ 764:	ef 91       	pop	r30
+ 766:	9f 91       	pop	r25
+ 768:	8f 91       	pop	r24
+ 76a:	0f 90       	pop	r0
+ 76c:	0f be       	out	0x3f, r0	; 63
+ 76e:	0f 90       	pop	r0
+ 770:	1f 90       	pop	r1
+ 772:	18 95       	reti
+
+Disassembly of section .text.spi_exchange:
+
+000006e0 <spi_exchange>:
+
+
+//4バイトSPIで交換する
+//USIは使わず任意のピンを使う
+void spi_exchange(uint8_t *poutdata, uint8_t *pindata)
+{
+ 6e0:	fc 01       	movw	r30, r24
+ 6e2:	a6 2f       	mov	r26, r22
+ 6e4:	b7 2f       	mov	r27, r23
+ 6e6:	bc 01       	movw	r22, r24
+ 6e8:	6c 5f       	subi	r22, 0xFC	; 252
+ 6ea:	7f 4f       	sbci	r23, 0xFF	; 255
+	uint8_t		indata;
+	uint8_t		delaycnt;
+
+	bytecount = 4;
+	while(bytecount){
+		outdata = poutdata[4-bytecount];
+ 6ec:	41 91       	ld	r20, Z+
+ 6ee:	38 e0       	ldi	r19, 0x08	; 8
+		indata = 0;
+ 6f0:	20 e0       	ldi	r18, 0x00	; 0
+		bitcount = 8;
+		while(bitcount){
+			//送信データ(MSB先行)
+			if(outdata&0x80)
+ 6f2:	44 23       	and	r20, r20
+ 6f4:	14 f4       	brge	.+4      	; 0x6fa <spi_exchange+0x1a>
+				sbi(PORTD,4);
+ 6f6:	94 9a       	sbi	0x12, 4	; 18
+ 6f8:	01 c0       	rjmp	.+2      	; 0x6fc <spi_exchange+0x1c>
+			else
+				cbi(PORTD,4);
+ 6fa:	94 98       	cbi	0x12, 4	; 18
+			outdata <<= 1;
+ 6fc:	44 0f       	add	r20, r20
+			//クロック上昇
+			sbi(PORTB, 4);
+ 6fe:	c4 9a       	sbi	0x18, 4	; 24
+			delaycnt = spidelay;
+ 700:	90 91 87 00 	lds	r25, 0x0087	; 0x800087 <spidelay>
+			while(delaycnt) delaycnt--;//カウント1あたり3クロック=0.15us
+ 704:	99 23       	and	r25, r25
+ 706:	11 f0       	breq	.+4      	; 0x70c <spi_exchange+0x2c>
+ 708:	91 50       	subi	r25, 0x01	; 1
+ 70a:	f1 f7       	brne	.-4      	; 0x708 <spi_exchange+0x28>
+			//受信データ
+			indata <<= 1;
+ 70c:	22 0f       	add	r18, r18
+			if(PIND & 0b00001000)
+ 70e:	83 99       	sbic	0x10, 3	; 16
+				indata |= 1;
+ 710:	21 60       	ori	r18, 0x01	; 1
+			//クロック下降
+			bitcount--;
+			cbi(PORTB, 4);
+ 712:	c4 98       	cbi	0x18, 4	; 24
+			delaycnt = spidelay;
+ 714:	90 91 87 00 	lds	r25, 0x0087	; 0x800087 <spidelay>
+			while(delaycnt) delaycnt--;	//カウント1あたり3クロック=0.15us
+ 718:	99 23       	and	r25, r25
+ 71a:	11 f0       	breq	.+4      	; 0x720 <spi_exchange+0x40>
+ 71c:	91 50       	subi	r25, 0x01	; 1
+ 71e:	f1 f7       	brne	.-4      	; 0x71c <spi_exchange+0x3c>
+ 720:	31 50       	subi	r19, 0x01	; 1
+	bytecount = 4;
+	while(bytecount){
+		outdata = poutdata[4-bytecount];
+		indata = 0;
+		bitcount = 8;
+		while(bitcount){
+ 722:	39 f7       	brne	.-50     	; 0x6f2 <spi_exchange+0x12>
+			bitcount--;
+			cbi(PORTB, 4);
+			delaycnt = spidelay;
+			while(delaycnt) delaycnt--;	//カウント1あたり3クロック=0.15us
+		}
+		pindata[4-bytecount] = indata;
+ 724:	2d 93       	st	X+, r18
+	uint8_t		outdata;
+	uint8_t		indata;
+	uint8_t		delaycnt;
+
+	bytecount = 4;
+	while(bytecount){
+ 726:	e6 17       	cp	r30, r22
+ 728:	f7 07       	cpc	r31, r23
+ 72a:	01 f7       	brne	.-64     	; 0x6ec <spi_exchange+0xc>
+		}
+		pindata[4-bytecount] = indata;
+		bytecount--;
+	}
+
+}
+ 72c:	08 95       	ret
+
+Disassembly of section .text.main:
+
+00000078 <main>:
+#endif
+
+
+
+int main(void) 
+{
+  78:	cf 93       	push	r28
+  7a:	df 93       	push	r29
+  7c:	cd b7       	in	r28, 0x3d	; 61
+  7e:	dd 27       	eor	r29, r29
+  80:	c8 51       	subi	r28, 0x18	; 24
+  82:	cd bf       	out	0x3d, r28	; 61
+	uint16_t pagepos;		//ページ内の走査位置
+
+
+reset:
+	//マスター割り込み禁止
+	cli();
+  84:	f8 94       	cli
+   GND ┃GN  D6┃SpeedSW
+       ┗━━━┛
+*/
+
+	//IO方向セット(0入力,1出力)
+	DDRB  = 0b00010000;
+  86:	80 e1       	ldi	r24, 0x10	; 16
+  88:	87 bb       	out	0x17, r24	; 23
+	DDRD  = 0b00110010;
+  8a:	82 e3       	ldi	r24, 0x32	; 50
+  8c:	81 bb       	out	0x11, r24	; 17
+
+	//ポート初期化
+	//出力の場合1でHigh、0でLow
+	//入力の場合1を書くとプルアップ抵抗活性化、0を書くとハイインピーダンス
+	PORTB = 0b00000000;
+  8e:	18 ba       	out	0x18, r1	; 24
+	PORTD = 0b01010001;
+  90:	81 e5       	ldi	r24, 0x51	; 81
+  92:	82 bb       	out	0x12, r24	; 18
+	//タイマ設定
+	
+	//TCCR0
+	//B3,A1,A0	動作種別、CTC動作は010
+	//B210	プリスケーラ(000:停止, 001:1, 010:8, 011:64, 100:256, 101:1024, 110,111:予約)
+	TCCR0A = 0b00000010;
+  94:	82 e0       	ldi	r24, 0x02	; 2
+  96:	80 bf       	out	0x30, r24	; 48
+	TCCR0B = 0b00000000;
+  98:	13 be       	out	0x33, r1	; 51
+
+	//タイマ0比較値(AVRのクロック/ソフトUART速度/プリスケーラ)
+	OCR0A = 32;
+  9a:	90 e2       	ldi	r25, 0x20	; 32
+  9c:	96 bf       	out	0x36, r25	; 54
+	TCNT0 = 0;
+  9e:	12 be       	out	0x32, r1	; 50
+	
+	//TCCR1
+	//B4,B3,A1,A0 動作種別 	CTCは0100(比較A一致)か1100(捕獲一致)
+	//B210	プリスケーラ 設定値はタイマ0と同じ
+	TCCR1A = 0;
+  a0:	1f bc       	out	0x2f, r1	; 47
+	TCCR1B = 0b00001000;
+  a2:	98 e0       	ldi	r25, 0x08	; 8
+  a4:	9e bd       	out	0x2e, r25	; 46
+	OCR1A  = 32;
+  a6:	20 e2       	ldi	r18, 0x20	; 32
+  a8:	30 e0       	ldi	r19, 0x00	; 0
+  aa:	3b bd       	out	0x2b, r19	; 43
+  ac:	2a bd       	out	0x2a, r18	; 42
+	TCNT1  = 0;
+  ae:	1d bc       	out	0x2d, r1	; 45
+  b0:	1c bc       	out	0x2c, r1	; 44
+
+	//タイマ割り込みはここで許可するが、タイマーが動いていないので割り込みはまだ発生しない
+	TIMSK = 1<<OCIE0A | 1<<OCIE1A;
+  b2:	21 e4       	ldi	r18, 0x41	; 65
+  b4:	29 bf       	out	0x39, r18	; 57
+	//MCU制御
+	//7		1を書くとプルアップ禁止
+	//6,5,4	休止種別、休止許可
+	//3,2	INT1割り込み条件(00:Low,01:両端,10:下降,11:上昇)
+	//1,0	INT0割り込み条件
+	MCUCR = 0b00001000;
+  b6:	95 bf       	out	0x35, r25	; 53
+	//ピン割り込みは実行モードになったら許可するのでここではまだ不許可
+	GIMSK = 0;
+  b8:	1b be       	out	0x3b, r1	; 59
+
+	//////////////////////////////////////////////////////////////////////
+	//USART設定
+
+	//初期化時はボーレート0にする必要がある
+	UBRRH = 0;
+  ba:	12 b8       	out	0x02, r1	; 2
+	UBRRL = 0;
+  bc:	19 b8       	out	0x09, r1	; 9
+
+	//データレジスタ
+	UDR = 0;
+  be:	1c b8       	out	0x0c, r1	; 12
+	//4	フレーミングエラーフラグ
+	//3	データオーバーランフラグ
+	//2	パリティエラーフラグ
+	//1	倍速許可
+	//0	マルチプロセッサ許可
+	UCSRA = 0b00000000;
+  c0:	1b b8       	out	0x0b, r1	; 11
+	//4	受信(RXD0pin)許可
+	//3	送信(TXD0pin)許可
+	//2	データビット長選択2
+	//1	受信追加データビット(9ビットフレームの時使用)
+	//0	送信追加データビット(9ビットフレームの時使用)
+	UCSRB = 0b10011000;
+  c2:	98 e9       	ldi	r25, 0x98	; 152
+  c4:	9a b9       	out	0x0a, r25	; 10
+	//76 動作モード選択(00:非同期(調歩), 01:同期, 11:SPI)
+	//54 パリティ選択(00:パリティなし, 10:偶数, 11:奇数)
+	//3	 ストップビット(0:1bit, 1:2bit)
+	//21 データビット長選択10(8bitは011)
+	//0	 クロック極性(0:送信立ち上がり,受信立下り, 1:その逆、同期動作時のみ有効)
+	UCSRC = 0b00000110;
+  c6:	96 e0       	ldi	r25, 0x06	; 6
+  c8:	93 b9       	out	0x03, r25	; 3
+
+	//ボーレート
+	UBRRH = 0;
+  ca:	12 b8       	out	0x02, r1	; 2
+	UBRRL = UBRR_VAL;
+  cc:	9a e0       	ldi	r25, 0x0A	; 10
+  ce:	99 b9       	out	0x09, r25	; 9
+	//////////////////////////////////////////////////////////////////////
+	
+	//諸変数初期化
+	txwritepos = 0;
+	txreadpos = 0;
+	rxwritepos = 0;
+  d0:	10 92 88 00 	sts	0x0088, r1	; 0x800088 <rxwritepos>
+	rxreadpos = 0;
+  d4:	10 92 86 00 	sts	0x0086, r1	; 0x800086 <rxreadpos>
+	cmdresp[0] = 0xFF;
+	cmdresp[1] = 0;		//実行時はコマンド番号が入る
+	cmdresp[2] = 0;
+	cmdresp[3] = 0;
+	*/
+	suarxbit = -1;
+  d8:	9f ef       	ldi	r25, 0xFF	; 255
+  da:	90 93 80 00 	sts	0x0080, r25	; 0x800080 <suarxbit>
+	suatxbit = -1;
+  de:	90 93 84 00 	sts	0x0084, r25	; 0x800084 <suatxbit>
+	blkmodetype = 0;
+	spidelay = 2;
+  e2:	80 93 87 00 	sts	0x0087, r24	; 0x800087 <spidelay>
+	
+
+	//マスター割り込み許可
+	sei();
+  e6:	78 94       	sei
+	cmdresp[2] = 0;
+	cmdresp[3] = 0;
+	*/
+	suarxbit = -1;
+	suatxbit = -1;
+	blkmodetype = 0;
+  e8:	00 e0       	ldi	r16, 0x00	; 0
+	UBRRL = UBRR_VAL;
+
+	//////////////////////////////////////////////////////////////////////
+	
+	//諸変数初期化
+	txwritepos = 0;
+  ea:	10 e0       	ldi	r17, 0x00	; 0
+	txreadpos = 0;
+  ec:	51 2c       	mov	r5, r1
+			}
+		}
+
+		//ターゲットから受信したソフトUARTのデータがあればホストへ送出するバッファに入れる
+		if(suarxbit==10){
+			suarxbit = -1;
+  ee:	44 24       	eor	r4, r4
+  f0:	4a 94       	dec	r4
+			txbuf[txwritepos] = 0xFF;
+			txbuf[txwritepos+1] = 0xF2;
+  f2:	0f 2e       	mov	r0, r31
+  f4:	f2 ef       	ldi	r31, 0xF2	; 242
+  f6:	3f 2e       	mov	r3, r31
+  f8:	f0 2d       	mov	r31, r0
+						}
+						break;
+					case 0xFF:
+						//padding command
+						//no response
+						cmdresp[0] = 0xFE; //0xFEは返信なしの意味
+  fa:	0f 2e       	mov	r0, r31
+  fc:	fe ef       	ldi	r31, 0xFE	; 254
+  fe:	2f 2e       	mov	r2, r31
+ 100:	f0 2d       	mov	r31, r0
+ 102:	10 c0       	rjmp	.+32     	; 0x124 <__stack+0x45>
+	while(1){
+		///////////////////////////////////////////////////////////////////////
+		//UART送信
+		
+		//ブリッジからホストへ送信
+		if(txwritepos != txreadpos){
+ 104:	15 15       	cp	r17, r5
+ 106:	71 f0       	breq	.+28     	; 0x124 <__stack+0x45>
+			//UART送信レジスタ空き待ちフラグ(UDRE)
+			if(bit_is_set(UCSRA,UDRE)){
+ 108:	5d 9b       	sbis	0x0b, 5	; 11
+ 10a:	0c c0       	rjmp	.+24     	; 0x124 <__stack+0x45>
+				//送信データセット
+				//同時に送信が開始され、UDREは解除される
+				UDR = txbuf[txreadpos++];
+ 10c:	81 e0       	ldi	r24, 0x01	; 1
+ 10e:	85 0d       	add	r24, r5
+ 110:	e1 e0       	ldi	r30, 0x01	; 1
+ 112:	f0 e0       	ldi	r31, 0x00	; 0
+ 114:	ec 0f       	add	r30, r28
+ 116:	fd 1f       	adc	r31, r29
+ 118:	e5 0d       	add	r30, r5
+ 11a:	f1 1d       	adc	r31, r1
+ 11c:	90 81       	ld	r25, Z
+ 11e:	9c b9       	out	0x0c, r25	; 12
+				txreadpos &= TXBUFMAXMASK; //if(txoutpos==TXBUFSIZE) txoutpos = 0;と同じ効果
+ 120:	8f 70       	andi	r24, 0x0F	; 15
+ 122:	58 2e       	mov	r5, r24
+			}
+		}
+
+		//ターゲットから受信したソフトUARTのデータがあればホストへ送出するバッファに入れる
+		if(suarxbit==10){
+ 124:	80 91 80 00 	lds	r24, 0x0080	; 0x800080 <suarxbit>
+ 128:	8a 30       	cpi	r24, 0x0A	; 10
+ 12a:	31 f5       	brne	.+76     	; 0x178 <__stack+0x99>
+			suarxbit = -1;
+ 12c:	40 92 80 00 	sts	0x0080, r4	; 0x800080 <suarxbit>
+			txbuf[txwritepos] = 0xFF;
+ 130:	81 2f       	mov	r24, r17
+ 132:	90 e0       	ldi	r25, 0x00	; 0
+ 134:	e1 e0       	ldi	r30, 0x01	; 1
+ 136:	f0 e0       	ldi	r31, 0x00	; 0
+ 138:	ec 0f       	add	r30, r28
+ 13a:	fd 1f       	adc	r31, r29
+ 13c:	e8 0f       	add	r30, r24
+ 13e:	f9 1f       	adc	r31, r25
+ 140:	40 82       	st	Z, r4
+			txbuf[txwritepos+1] = 0xF2;
+ 142:	e2 e0       	ldi	r30, 0x02	; 2
+ 144:	f0 e0       	ldi	r31, 0x00	; 0
+ 146:	ec 0f       	add	r30, r28
+ 148:	fd 1f       	adc	r31, r29
+ 14a:	e8 0f       	add	r30, r24
+ 14c:	f9 1f       	adc	r31, r25
+ 14e:	30 82       	st	Z, r3
+			txbuf[txwritepos+2] = suarxbuf;
+ 150:	20 91 85 00 	lds	r18, 0x0085	; 0x800085 <suarxbuf>
+ 154:	e3 e0       	ldi	r30, 0x03	; 3
+ 156:	f0 e0       	ldi	r31, 0x00	; 0
+ 158:	ec 0f       	add	r30, r28
+ 15a:	fd 1f       	adc	r31, r29
+ 15c:	e8 0f       	add	r30, r24
+ 15e:	f9 1f       	adc	r31, r25
+ 160:	20 83       	st	Z, r18
+			txbuf[txwritepos+3] = 0;
+ 162:	e4 e0       	ldi	r30, 0x04	; 4
+ 164:	f0 e0       	ldi	r31, 0x00	; 0
+ 166:	ec 0f       	add	r30, r28
+ 168:	fd 1f       	adc	r31, r29
+ 16a:	e8 0f       	add	r30, r24
+ 16c:	f9 1f       	adc	r31, r25
+ 16e:	10 82       	st	Z, r1
+			txwritepos += 4;
+ 170:	84 e0       	ldi	r24, 0x04	; 4
+ 172:	81 0f       	add	r24, r17
+			txwritepos &= TXBUFMAXMASK; //if(txinpos==TXBUFSIZE) txinpos = 0;と同じ効果
+ 174:	18 2f       	mov	r17, r24
+ 176:	1f 70       	andi	r17, 0x0F	; 15
+
+		///////////////////////////////////////////////////////////////////////
+		//UART受信
+
+		//ブロック転送のときは4バイト固定ではなく指定したブロック長になる
+		if(blkmodetype!=0){
+ 178:	00 23       	and	r16, r16
+ 17a:	09 f4       	brne	.+2      	; 0x17e <__stack+0x9f>
+ 17c:	f1 c0       	rjmp	.+482    	; 0x360 <__stack+0x281>
+			switch(blkmodetype){
+ 17e:	01 3c       	cpi	r16, 0xC1	; 193
+ 180:	09 f4       	brne	.+2      	; 0x184 <__stack+0xa5>
+ 182:	a6 c0       	rjmp	.+332    	; 0x2d0 <__stack+0x1f1>
+ 184:	18 f4       	brcc	.+6      	; 0x18c <__stack+0xad>
+ 186:	00 3c       	cpi	r16, 0xC0	; 192
+ 188:	39 f0       	breq	.+14     	; 0x198 <__stack+0xb9>
+ 18a:	e5 c1       	rjmp	.+970    	; 0x556 <__LOCK_REGION_LENGTH__+0x156>
+ 18c:	02 3c       	cpi	r16, 0xC2	; 194
+ 18e:	21 f0       	breq	.+8      	; 0x198 <__stack+0xb9>
+ 190:	03 3c       	cpi	r16, 0xC3	; 195
+ 192:	09 f4       	brne	.+2      	; 0x196 <__stack+0xb7>
+ 194:	9d c0       	rjmp	.+314    	; 0x2d0 <__stack+0x1f1>
+ 196:	df c1       	rjmp	.+958    	; 0x556 <__LOCK_REGION_LENGTH__+0x156>
+			case 0xC0:
+			case 0xC2:
+				//連続書き込み
+				if(rxreadpos < rxwritepos){
+ 198:	90 91 86 00 	lds	r25, 0x0086	; 0x800086 <rxreadpos>
+ 19c:	80 91 88 00 	lds	r24, 0x0088	; 0x800088 <rxwritepos>
+ 1a0:	98 17       	cp	r25, r24
+ 1a2:	08 f0       	brcs	.+2      	; 0x1a6 <__stack+0xc7>
+ 1a4:	d8 c1       	rjmp	.+944    	; 0x556 <__LOCK_REGION_LENGTH__+0x156>
+					//ページ設定
+					if(blkmodetype==0xC0)	//FLASHページ設定
+ 1a6:	00 3c       	cpi	r16, 0xC0	; 192
+ 1a8:	e1 f4       	brne	.+56     	; 0x1e2 <__stack+0x103>
+						spibuf[0] = (rxreadpos&1)==0? 0x40: 0x48;
+ 1aa:	80 91 86 00 	lds	r24, 0x0086	; 0x800086 <rxreadpos>
+ 1ae:	80 ff       	sbrs	r24, 0
+ 1b0:	02 c0       	rjmp	.+4      	; 0x1b6 <__stack+0xd7>
+ 1b2:	88 e4       	ldi	r24, 0x48	; 72
+ 1b4:	01 c0       	rjmp	.+2      	; 0x1b8 <__stack+0xd9>
+ 1b6:	80 e4       	ldi	r24, 0x40	; 64
+ 1b8:	8d 8b       	std	Y+21, r24	; 0x15
+					else if(blkmodetype==0xC2)	//EEPROMページ設定
+						spibuf[0] = 0xC1;
+					spibuf[1] = pagepos>>8;
+ 1ba:	fe 8a       	std	Y+22, r15	; 0x16
+					spibuf[2] = pagepos&0xFF;
+ 1bc:	ef 8a       	std	Y+23, r14	; 0x17
+					spibuf[3] = rxbuf[rxreadpos]; //DBGUDR; //UDR;
+ 1be:	e0 91 86 00 	lds	r30, 0x0086	; 0x800086 <rxreadpos>
+ 1c2:	f0 e0       	ldi	r31, 0x00	; 0
+ 1c4:	e0 5a       	subi	r30, 0xA0	; 160
+ 1c6:	ff 4f       	sbci	r31, 0xFF	; 255
+ 1c8:	80 81       	ld	r24, Z
+ 1ca:	88 8f       	std	Y+24, r24	; 0x18
+					//SPI
+					spi_exchange(spibuf, cmdresp);
+ 1cc:	be 01       	movw	r22, r28
+ 1ce:	6f 5e       	subi	r22, 0xEF	; 239
+ 1d0:	7f 4f       	sbci	r23, 0xFF	; 255
+ 1d2:	ce 01       	movw	r24, r28
+ 1d4:	45 96       	adiw	r24, 0x15	; 21
+ 1d6:	84 d2       	rcall	.+1288   	; 0x6e0 <spi_exchange>
+				
+					//ページ内位置を進める
+					if( (blkmodetype==0xC0 && (rxreadpos&1)==1) || blkmodetype==0xC2){
+ 1d8:	80 91 86 00 	lds	r24, 0x0086	; 0x800086 <rxreadpos>
+ 1dc:	80 fd       	sbrc	r24, 0
+ 1de:	15 c0       	rjmp	.+42     	; 0x20a <__stack+0x12b>
+ 1e0:	f0 c1       	rjmp	.+992    	; 0x5c2 <__LOCK_REGION_LENGTH__+0x1c2>
+				//連続書き込み
+				if(rxreadpos < rxwritepos){
+					//ページ設定
+					if(blkmodetype==0xC0)	//FLASHページ設定
+						spibuf[0] = (rxreadpos&1)==0? 0x40: 0x48;
+					else if(blkmodetype==0xC2)	//EEPROMページ設定
+ 1e2:	02 3c       	cpi	r16, 0xC2	; 194
+ 1e4:	09 f0       	breq	.+2      	; 0x1e8 <__stack+0x109>
+ 1e6:	cd c1       	rjmp	.+922    	; 0x582 <__LOCK_REGION_LENGTH__+0x182>
+						spibuf[0] = 0xC1;
+ 1e8:	81 ec       	ldi	r24, 0xC1	; 193
+ 1ea:	8d 8b       	std	Y+21, r24	; 0x15
+					spibuf[1] = pagepos>>8;
+ 1ec:	fe 8a       	std	Y+22, r15	; 0x16
+					spibuf[2] = pagepos&0xFF;
+ 1ee:	ef 8a       	std	Y+23, r14	; 0x17
+					spibuf[3] = rxbuf[rxreadpos]; //DBGUDR; //UDR;
+ 1f0:	e0 91 86 00 	lds	r30, 0x0086	; 0x800086 <rxreadpos>
+ 1f4:	f0 e0       	ldi	r31, 0x00	; 0
+ 1f6:	e0 5a       	subi	r30, 0xA0	; 160
+ 1f8:	ff 4f       	sbci	r31, 0xFF	; 255
+ 1fa:	80 81       	ld	r24, Z
+ 1fc:	88 8f       	std	Y+24, r24	; 0x18
+					//SPI
+					spi_exchange(spibuf, cmdresp);
+ 1fe:	be 01       	movw	r22, r28
+ 200:	6f 5e       	subi	r22, 0xEF	; 239
+ 202:	7f 4f       	sbci	r23, 0xFF	; 255
+ 204:	ce 01       	movw	r24, r28
+ 206:	45 96       	adiw	r24, 0x15	; 21
+ 208:	6b d2       	rcall	.+1238   	; 0x6e0 <spi_exchange>
+				
+					//ページ内位置を進める
+					if( (blkmodetype==0xC0 && (rxreadpos&1)==1) || blkmodetype==0xC2){
+						pagepos++;
+ 20a:	8f ef       	ldi	r24, 0xFF	; 255
+ 20c:	e8 1a       	sub	r14, r24
+ 20e:	f8 0a       	sbc	r15, r24
+					}
+					//ページ端なら書き込み
+					if(pagepos == pagesize){
+ 210:	e6 14       	cp	r14, r6
+ 212:	f7 04       	cpc	r15, r7
+ 214:	e1 f4       	brne	.+56     	; 0x24e <__stack+0x16f>
+						pagepos = 0;
+						if(blkmodetype==0xC0)
+ 216:	00 3c       	cpi	r16, 0xC0	; 192
+ 218:	19 f4       	brne	.+6      	; 0x220 <__stack+0x141>
+							spibuf[0] = 0x4C;	//Flash書き込み
+ 21a:	8c e4       	ldi	r24, 0x4C	; 76
+ 21c:	8d 8b       	std	Y+21, r24	; 0x15
+ 21e:	04 c0       	rjmp	.+8      	; 0x228 <__stack+0x149>
+						else if(blkmodetype==0xC2)
+ 220:	02 3c       	cpi	r16, 0xC2	; 194
+ 222:	11 f4       	brne	.+4      	; 0x228 <__stack+0x149>
+							spibuf[0] = 0xC2;	//EEPROM書き込み
+ 224:	82 ec       	ldi	r24, 0xC2	; 194
+ 226:	8d 8b       	std	Y+21, r24	; 0x15
+						spibuf[1] = addr>>8;
+ 228:	de 8a       	std	Y+22, r13	; 0x16
+						spibuf[2] = addr&0xFF;
+ 22a:	cf 8a       	std	Y+23, r12	; 0x17
+						spibuf[3] = 0;
+ 22c:	18 8e       	std	Y+24, r1	; 0x18
+						spi_exchange(spibuf, cmdresp);
+ 22e:	be 01       	movw	r22, r28
+ 230:	6f 5e       	subi	r22, 0xEF	; 239
+ 232:	7f 4f       	sbci	r23, 0xFF	; 255
+ 234:	ce 01       	movw	r24, r28
+ 236:	45 96       	adiw	r24, 0x15	; 21
+ 238:	53 d2       	rcall	.+1190   	; 0x6e0 <spi_exchange>
+						addr += pagesize;
+ 23a:	c6 0c       	add	r12, r6
+ 23c:	d7 1c       	adc	r13, r7
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 23e:	e7 ea       	ldi	r30, 0xA7	; 167
+ 240:	f1 e6       	ldi	r31, 0x61	; 97
+ 242:	31 97       	sbiw	r30, 0x01	; 1
+ 244:	f1 f7       	brne	.-4      	; 0x242 <__stack+0x163>
+ 246:	00 c0       	rjmp	.+0      	; 0x248 <__stack+0x169>
+ 248:	00 00       	nop
+					if( (blkmodetype==0xC0 && (rxreadpos&1)==1) || blkmodetype==0xC2){
+						pagepos++;
+					}
+					//ページ端なら書き込み
+					if(pagepos == pagesize){
+						pagepos = 0;
+ 24a:	e1 2c       	mov	r14, r1
+ 24c:	f1 2c       	mov	r15, r1
+						addr += pagesize;
+						_delay_ms(5);
+					}
+					
+					//バッファ読み込み位置を進めて、バッファ端ならホストへ通知
+					rxreadpos++;
+ 24e:	80 91 86 00 	lds	r24, 0x0086	; 0x800086 <rxreadpos>
+ 252:	8f 5f       	subi	r24, 0xFF	; 255
+ 254:	80 93 86 00 	sts	0x0086, r24	; 0x800086 <rxreadpos>
+					if(rxreadpos==RXBUFSIZE){
+ 258:	80 91 86 00 	lds	r24, 0x0086	; 0x800086 <rxreadpos>
+ 25c:	80 32       	cpi	r24, 0x20	; 32
+ 25e:	69 f5       	brne	.+90     	; 0x2ba <__stack+0x1db>
+						rxreadpos=0;
+ 260:	10 92 86 00 	sts	0x0086, r1	; 0x800086 <rxreadpos>
+						rxwritepos=0;
+ 264:	10 92 88 00 	sts	0x0088, r1	; 0x800088 <rxwritepos>
+						txbuf[txwritepos++] = 0xFF;
+ 268:	e1 e0       	ldi	r30, 0x01	; 1
+ 26a:	f0 e0       	ldi	r31, 0x00	; 0
+ 26c:	ec 0f       	add	r30, r28
+ 26e:	fd 1f       	adc	r31, r29
+ 270:	e1 0f       	add	r30, r17
+ 272:	f1 1d       	adc	r31, r1
+ 274:	40 82       	st	Z, r4
+						txbuf[txwritepos++] = blkmodetype;
+ 276:	81 e0       	ldi	r24, 0x01	; 1
+ 278:	81 0f       	add	r24, r17
+ 27a:	e1 e0       	ldi	r30, 0x01	; 1
+ 27c:	f0 e0       	ldi	r31, 0x00	; 0
+ 27e:	ec 0f       	add	r30, r28
+ 280:	fd 1f       	adc	r31, r29
+ 282:	e8 0f       	add	r30, r24
+ 284:	f1 1d       	adc	r31, r1
+ 286:	00 83       	st	Z, r16
+						txbuf[txwritepos++] = (addr>>8)&0xFF;
+ 288:	82 e0       	ldi	r24, 0x02	; 2
+ 28a:	81 0f       	add	r24, r17
+ 28c:	e1 e0       	ldi	r30, 0x01	; 1
+ 28e:	f0 e0       	ldi	r31, 0x00	; 0
+ 290:	ec 0f       	add	r30, r28
+ 292:	fd 1f       	adc	r31, r29
+ 294:	e8 0f       	add	r30, r24
+ 296:	f1 1d       	adc	r31, r1
+ 298:	d0 82       	st	Z, r13
+						txbuf[txwritepos++] = addr&0xFF;
+ 29a:	84 e0       	ldi	r24, 0x04	; 4
+ 29c:	81 0f       	add	r24, r17
+ 29e:	93 e0       	ldi	r25, 0x03	; 3
+ 2a0:	91 0f       	add	r25, r17
+ 2a2:	e1 e0       	ldi	r30, 0x01	; 1
+ 2a4:	f0 e0       	ldi	r31, 0x00	; 0
+ 2a6:	ec 0f       	add	r30, r28
+ 2a8:	fd 1f       	adc	r31, r29
+ 2aa:	e9 0f       	add	r30, r25
+ 2ac:	f1 1d       	adc	r31, r1
+ 2ae:	c0 82       	st	Z, r12
+						txwritepos &= TXBUFMAXMASK;
+ 2b0:	18 2f       	mov	r17, r24
+ 2b2:	1f 70       	andi	r17, 0x0F	; 15
+						
+						//ブロックカウンタを進め、ブロック終了判定
+						//終了判定はページではなくブロックで行っている
+						//現時点(ver2)でAVRのROMサイズはいずれもブロックサイズ(32)の倍数なので問題ないと思われる
+						cntblk++;
+ 2b4:	ff ef       	ldi	r31, 0xFF	; 255
+ 2b6:	af 1a       	sub	r10, r31
+ 2b8:	bf 0a       	sbc	r11, r31
+					}
+					if(cntblk == nblks){
+ 2ba:	a8 14       	cp	r10, r8
+ 2bc:	b9 04       	cpc	r11, r9
+ 2be:	09 f4       	brne	.+2      	; 0x2c2 <__stack+0x1e3>
+						blkmodetype = 0;
+ 2c0:	00 e0       	ldi	r16, 0x00	; 0
+					}
+					cnttimeout = MAX_TIMEOUT;
+ 2c2:	8f ef       	ldi	r24, 0xFF	; 255
+ 2c4:	9f ef       	ldi	r25, 0xFF	; 255
+ 2c6:	90 93 83 00 	sts	0x0083, r25	; 0x800083 <cnttimeout+0x1>
+ 2ca:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <cnttimeout>
+ 2ce:	43 c1       	rjmp	.+646    	; 0x556 <__LOCK_REGION_LENGTH__+0x156>
+				}
+				break;
+			case 0xC1:
+			case 0xC3:
+				//flash/eeprom連続読み込み
+				if(txwritepos == txreadpos){ //コマンドレスポンスを優先する(送信バッファが空になってから読み込み開始)
+ 2d0:	15 11       	cpse	r17, r5
+ 2d2:	41 c1       	rjmp	.+642    	; 0x556 <__LOCK_REGION_LENGTH__+0x156>
+					if(blkmodetype==0xC1)
+ 2d4:	01 3c       	cpi	r16, 0xC1	; 193
+ 2d6:	b1 f4       	brne	.+44     	; 0x304 <__stack+0x225>
+						spibuf[0] = (rxreadpos&1)==0? 0x20: 0x28; //rxreadposはインデックス代わり
+ 2d8:	80 91 86 00 	lds	r24, 0x0086	; 0x800086 <rxreadpos>
+ 2dc:	80 ff       	sbrs	r24, 0
+ 2de:	02 c0       	rjmp	.+4      	; 0x2e4 <__stack+0x205>
+ 2e0:	88 e2       	ldi	r24, 0x28	; 40
+ 2e2:	01 c0       	rjmp	.+2      	; 0x2e6 <__stack+0x207>
+ 2e4:	80 e2       	ldi	r24, 0x20	; 32
+ 2e6:	8d 8b       	std	Y+21, r24	; 0x15
+					else if(blkmodetype==0xC3)
+						spibuf[0] = 0xA0;
+					spibuf[1] = addr>>8;	//アドレス上位
+ 2e8:	de 8a       	std	Y+22, r13	; 0x16
+					spibuf[2] = addr&0xFF;	//アドレス下位
+ 2ea:	cf 8a       	std	Y+23, r12	; 0x17
+					spibuf[3] = 0;
+ 2ec:	18 8e       	std	Y+24, r1	; 0x18
+						
+					//SPI
+					spi_exchange(spibuf, cmdresp);
+ 2ee:	be 01       	movw	r22, r28
+ 2f0:	6f 5e       	subi	r22, 0xEF	; 239
+ 2f2:	7f 4f       	sbci	r23, 0xFF	; 255
+ 2f4:	ce 01       	movw	r24, r28
+ 2f6:	45 96       	adiw	r24, 0x15	; 21
+ 2f8:	f3 d1       	rcall	.+998    	; 0x6e0 <spi_exchange>
+					//アドレスを進める
+					if( (blkmodetype==0xC1 && (rxreadpos&1)==1) || blkmodetype==0xC3){
+ 2fa:	80 91 86 00 	lds	r24, 0x0086	; 0x800086 <rxreadpos>
+ 2fe:	80 fd       	sbrc	r24, 0
+ 300:	0f c0       	rjmp	.+30     	; 0x320 <__stack+0x241>
+ 302:	11 c0       	rjmp	.+34     	; 0x326 <__stack+0x247>
+			case 0xC3:
+				//flash/eeprom連続読み込み
+				if(txwritepos == txreadpos){ //コマンドレスポンスを優先する(送信バッファが空になってから読み込み開始)
+					if(blkmodetype==0xC1)
+						spibuf[0] = (rxreadpos&1)==0? 0x20: 0x28; //rxreadposはインデックス代わり
+					else if(blkmodetype==0xC3)
+ 304:	03 3c       	cpi	r16, 0xC3	; 195
+ 306:	09 f0       	breq	.+2      	; 0x30a <__stack+0x22b>
+ 308:	50 c1       	rjmp	.+672    	; 0x5aa <__LOCK_REGION_LENGTH__+0x1aa>
+						spibuf[0] = 0xA0;
+ 30a:	80 ea       	ldi	r24, 0xA0	; 160
+ 30c:	8d 8b       	std	Y+21, r24	; 0x15
+					spibuf[1] = addr>>8;	//アドレス上位
+ 30e:	de 8a       	std	Y+22, r13	; 0x16
+					spibuf[2] = addr&0xFF;	//アドレス下位
+ 310:	cf 8a       	std	Y+23, r12	; 0x17
+					spibuf[3] = 0;
+ 312:	18 8e       	std	Y+24, r1	; 0x18
+						
+					//SPI
+					spi_exchange(spibuf, cmdresp);
+ 314:	be 01       	movw	r22, r28
+ 316:	6f 5e       	subi	r22, 0xEF	; 239
+ 318:	7f 4f       	sbci	r23, 0xFF	; 255
+ 31a:	ce 01       	movw	r24, r28
+ 31c:	45 96       	adiw	r24, 0x15	; 21
+ 31e:	e0 d1       	rcall	.+960    	; 0x6e0 <spi_exchange>
+					//アドレスを進める
+					if( (blkmodetype==0xC1 && (rxreadpos&1)==1) || blkmodetype==0xC3){
+						addr++;
+ 320:	9f ef       	ldi	r25, 0xFF	; 255
+ 322:	c9 1a       	sub	r12, r25
+ 324:	d9 0a       	sbc	r13, r25
+					}
+						
+					//ホストへ戻し
+					while(bit_is_clear(UCSRA,UDRE));
+ 326:	5d 9b       	sbis	0x0b, 5	; 11
+ 328:	fe cf       	rjmp	.-4      	; 0x326 <__stack+0x247>
+					UDR = cmdresp[3];
+ 32a:	8c 89       	ldd	r24, Y+20	; 0x14
+ 32c:	8c b9       	out	0x0c, r24	; 12
+						
+					//読み込みはブロック単位ではないがカウンタとして使う
+					rxreadpos++;
+ 32e:	80 91 86 00 	lds	r24, 0x0086	; 0x800086 <rxreadpos>
+ 332:	8f 5f       	subi	r24, 0xFF	; 255
+ 334:	80 93 86 00 	sts	0x0086, r24	; 0x800086 <rxreadpos>
+					if(rxreadpos==RXBUFSIZE){
+ 338:	80 91 86 00 	lds	r24, 0x0086	; 0x800086 <rxreadpos>
+ 33c:	80 32       	cpi	r24, 0x20	; 32
+ 33e:	29 f4       	brne	.+10     	; 0x34a <__stack+0x26b>
+						cntblk++;
+ 340:	ef ef       	ldi	r30, 0xFF	; 255
+ 342:	ae 1a       	sub	r10, r30
+ 344:	be 0a       	sbc	r11, r30
+						rxreadpos = 0;
+ 346:	10 92 86 00 	sts	0x0086, r1	; 0x800086 <rxreadpos>
+					}
+					//終了判定
+					if(cntblk == nblks)
+ 34a:	a8 14       	cp	r10, r8
+ 34c:	b9 04       	cpc	r11, r9
+ 34e:	09 f4       	brne	.+2      	; 0x352 <__stack+0x273>
+						blkmodetype = 0;
+ 350:	00 e0       	ldi	r16, 0x00	; 0
+					cnttimeout = MAX_TIMEOUT;
+ 352:	8f ef       	ldi	r24, 0xFF	; 255
+ 354:	9f ef       	ldi	r25, 0xFF	; 255
+ 356:	90 93 83 00 	sts	0x0083, r25	; 0x800083 <cnttimeout+0x1>
+ 35a:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <cnttimeout>
+ 35e:	fb c0       	rjmp	.+502    	; 0x556 <__LOCK_REGION_LENGTH__+0x156>
+			}
+		}
+		//コマンド転送では4バイト単位で処理する
+		else{	//blkmodetype==0
+			//4バイト受信したら処理する
+			if(rxwritepos==4){
+ 360:	80 91 88 00 	lds	r24, 0x0088	; 0x800088 <rxwritepos>
+ 364:	84 30       	cpi	r24, 0x04	; 4
+ 366:	09 f0       	breq	.+2      	; 0x36a <__stack+0x28b>
+ 368:	f6 c0       	rjmp	.+492    	; 0x556 <__LOCK_REGION_LENGTH__+0x156>
+				rxwritepos=0;
+ 36a:	10 92 88 00 	sts	0x0088, r1	; 0x800088 <rxwritepos>
+				if(rxbuf[0]!=0xFF && GIMSK==0){
+ 36e:	e0 e6       	ldi	r30, 0x60	; 96
+ 370:	f0 e0       	ldi	r31, 0x00	; 0
+ 372:	80 81       	ld	r24, Z
+ 374:	8f 3f       	cpi	r24, 0xFF	; 255
+ 376:	59 f0       	breq	.+22     	; 0x38e <__stack+0x2af>
+ 378:	8b b7       	in	r24, 0x3b	; 59
+ 37a:	81 11       	cpse	r24, r1
+ 37c:	08 c0       	rjmp	.+16     	; 0x38e <__stack+0x2af>
+					//SPIでターゲットと4バイト交換する
+					spi_exchange((uint8_t*)rxbuf, cmdresp);
+ 37e:	be 01       	movw	r22, r28
+ 380:	6f 5e       	subi	r22, 0xEF	; 239
+ 382:	7f 4f       	sbci	r23, 0xFF	; 255
+ 384:	cf 01       	movw	r24, r30
+ 386:	ac d1       	rcall	.+856    	; 0x6e0 <spi_exchange>
+					cmdresp[0] = 0x6F;
+ 388:	8f e6       	ldi	r24, 0x6F	; 111
+ 38a:	89 8b       	std	Y+17, r24	; 0x11
+ 38c:	18 c1       	rjmp	.+560    	; 0x5be <__LOCK_REGION_LENGTH__+0x1be>
+				}
+				//ブリッジコマンド
+				else{
+					cmdresp[0] = 0xFF;
+ 38e:	49 8a       	std	Y+17, r4	; 0x11
+					cmdresp[1] = rxbuf[1];
+ 390:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <__DATA_REGION_ORIGIN__+0x1>
+ 394:	8a 8b       	std	Y+18, r24	; 0x12
+					cmdresp[2] = 0;
+ 396:	1b 8a       	std	Y+19, r1	; 0x13
+					cmdresp[3] = 0;
+ 398:	1c 8a       	std	Y+20, r1	; 0x14
+
+					//コマンド振り分け
+					switch(rxbuf[1]){
+ 39a:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <__DATA_REGION_ORIGIN__+0x1>
+ 39e:	8e 30       	cpi	r24, 0x0E	; 14
+ 3a0:	09 f4       	brne	.+2      	; 0x3a4 <__stack+0x2c5>
+ 3a2:	64 c0       	rjmp	.+200    	; 0x46c <__LOCK_REGION_LENGTH__+0x6c>
+ 3a4:	78 f4       	brcc	.+30     	; 0x3c4 <__stack+0x2e5>
+ 3a6:	8a 30       	cpi	r24, 0x0A	; 10
+ 3a8:	09 f4       	brne	.+2      	; 0x3ac <__stack+0x2cd>
+ 3aa:	48 c0       	rjmp	.+144    	; 0x43c <__LOCK_REGION_LENGTH__+0x3c>
+ 3ac:	28 f4       	brcc	.+10     	; 0x3b8 <__stack+0x2d9>
+ 3ae:	88 23       	and	r24, r24
+ 3b0:	f9 f0       	breq	.+62     	; 0x3f0 <__stack+0x311>
+ 3b2:	86 30       	cpi	r24, 0x06	; 6
+ 3b4:	f9 f0       	breq	.+62     	; 0x3f4 <__stack+0x315>
+ 3b6:	a3 c0       	rjmp	.+326    	; 0x4fe <__LOCK_REGION_LENGTH__+0xfe>
+ 3b8:	8c 30       	cpi	r24, 0x0C	; 12
+ 3ba:	09 f4       	brne	.+2      	; 0x3be <__stack+0x2df>
+ 3bc:	4b c0       	rjmp	.+150    	; 0x454 <__LOCK_REGION_LENGTH__+0x54>
+ 3be:	08 f4       	brcc	.+2      	; 0x3c2 <__stack+0x2e3>
+ 3c0:	45 c0       	rjmp	.+138    	; 0x44c <__LOCK_REGION_LENGTH__+0x4c>
+ 3c2:	50 c0       	rjmp	.+160    	; 0x464 <__LOCK_REGION_LENGTH__+0x64>
+ 3c4:	84 3c       	cpi	r24, 0xC4	; 196
+ 3c6:	50 f4       	brcc	.+20     	; 0x3dc <__stack+0x2fd>
+ 3c8:	80 3c       	cpi	r24, 0xC0	; 192
+ 3ca:	08 f0       	brcs	.+2      	; 0x3ce <__stack+0x2ef>
+ 3cc:	5b c0       	rjmp	.+182    	; 0x484 <__LOCK_REGION_LENGTH__+0x84>
+ 3ce:	84 31       	cpi	r24, 0x14	; 20
+ 3d0:	09 f4       	brne	.+2      	; 0x3d4 <__stack+0x2f5>
+ 3d2:	50 c0       	rjmp	.+160    	; 0x474 <__LOCK_REGION_LENGTH__+0x74>
+ 3d4:	85 31       	cpi	r24, 0x15	; 21
+ 3d6:	09 f4       	brne	.+2      	; 0x3da <__stack+0x2fb>
+ 3d8:	50 c0       	rjmp	.+160    	; 0x47a <__LOCK_REGION_LENGTH__+0x7a>
+ 3da:	91 c0       	rjmp	.+290    	; 0x4fe <__LOCK_REGION_LENGTH__+0xfe>
+ 3dc:	81 3f       	cpi	r24, 0xF1	; 241
+ 3de:	09 f4       	brne	.+2      	; 0x3e2 <__stack+0x303>
+ 3e0:	78 c0       	rjmp	.+240    	; 0x4d2 <__LOCK_REGION_LENGTH__+0xd2>
+ 3e2:	8f 3f       	cpi	r24, 0xFF	; 255
+ 3e4:	09 f4       	brne	.+2      	; 0x3e8 <__stack+0x309>
+ 3e6:	89 c0       	rjmp	.+274    	; 0x4fa <__LOCK_REGION_LENGTH__+0xfa>
+ 3e8:	8e 3c       	cpi	r24, 0xCE	; 206
+ 3ea:	09 f0       	breq	.+2      	; 0x3ee <__stack+0x30f>
+ 3ec:	88 c0       	rjmp	.+272    	; 0x4fe <__LOCK_REGION_LENGTH__+0xfe>
+ 3ee:	66 c0       	rjmp	.+204    	; 0x4bc <__LOCK_REGION_LENGTH__+0xbc>
+					case 0:	//null command
+						cmdresp[0] = 0xFE; //0xFEは返信なしの意味
+ 3f0:	29 8a       	std	Y+17, r2	; 0x11
+						break;
+ 3f2:	b1 c0       	rjmp	.+354    	; 0x556 <__LOCK_REGION_LENGTH__+0x156>
+					case 6:
+						//ターゲットリセットピン切り替え
+						if(rxbuf[2]==0){
+ 3f4:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <__DATA_REGION_ORIGIN__+0x2>
+ 3f8:	81 11       	cpse	r24, r1
+ 3fa:	06 c0       	rjmp	.+12     	; 0x408 <__LOCK_REGION_LENGTH__+0x8>
+							//プログラミングモードに切り替え
+							//外部割り込み不許可でソフトUART使用不可に
+							cbi(GIMSK, INT1);
+ 3fc:	8b b7       	in	r24, 0x3b	; 59
+ 3fe:	8f 77       	andi	r24, 0x7F	; 127
+ 400:	8b bf       	out	0x3b, r24	; 59
+							//ソフトSPI MOSI Low
+							cbi(PORTD, 4);
+ 402:	94 98       	cbi	0x12, 4	; 18
+							//RESETをlow
+							cbi(PORTD, 5);
+ 404:	95 98       	cbi	0x12, 5	; 18
+ 406:	7b c0       	rjmp	.+246    	; 0x4fe <__LOCK_REGION_LENGTH__+0xfe>
+						}
+						else if(rxbuf[2]==1){
+ 408:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <__DATA_REGION_ORIGIN__+0x2>
+ 40c:	81 30       	cpi	r24, 0x01	; 1
+ 40e:	49 f4       	brne	.+18     	; 0x422 <__LOCK_REGION_LENGTH__+0x22>
+							//実行モードに切り替え
+							//ソフトUART Tx High(アイドル)
+							sbi(PORTD, 4);
+ 410:	94 9a       	sbi	0x12, 4	; 18
+							//RESETをhiにして実行モードへ
+							sbi(PORTD, 5);
+ 412:	95 9a       	sbi	0x12, 5	; 18
+							//外部割り込み許可でソフトウェアUARTに
+							sbi(EIFR, INTF1);	//1を書き込むと割り込みフラグ強制解除
+ 414:	8a b7       	in	r24, 0x3a	; 58
+ 416:	80 68       	ori	r24, 0x80	; 128
+ 418:	8a bf       	out	0x3a, r24	; 58
+							sbi(GIMSK, INT1);
+ 41a:	8b b7       	in	r24, 0x3b	; 59
+ 41c:	80 68       	ori	r24, 0x80	; 128
+ 41e:	8b bf       	out	0x3b, r24	; 59
+ 420:	6e c0       	rjmp	.+220    	; 0x4fe <__LOCK_REGION_LENGTH__+0xfe>
+						}
+						else if(rxbuf[2]==2){
+ 422:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <__DATA_REGION_ORIGIN__+0x2>
+ 426:	82 30       	cpi	r24, 0x02	; 2
+ 428:	11 f4       	brne	.+4      	; 0x42e <__LOCK_REGION_LENGTH__+0x2e>
+							//RESETをlow
+							cbi(PORTD, 5);
+ 42a:	95 98       	cbi	0x12, 5	; 18
+ 42c:	68 c0       	rjmp	.+208    	; 0x4fe <__LOCK_REGION_LENGTH__+0xfe>
+						}
+						else if(rxbuf[2]==3){
+ 42e:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <__DATA_REGION_ORIGIN__+0x2>
+ 432:	83 30       	cpi	r24, 0x03	; 3
+ 434:	09 f0       	breq	.+2      	; 0x438 <__LOCK_REGION_LENGTH__+0x38>
+ 436:	c3 c0       	rjmp	.+390    	; 0x5be <__LOCK_REGION_LENGTH__+0x1be>
+							//RESETをhigh
+							sbi(PORTD, 5);					
+ 438:	95 9a       	sbi	0x12, 5	; 18
+ 43a:	61 c0       	rjmp	.+194    	; 0x4fe <__LOCK_REGION_LENGTH__+0xfe>
+						}
+						break;
+					case 10: //0x0A
+						//ポートB下位ニブル変更
+						PORTB = (PORTB & 0xF0) | (rxbuf[2] & 0x0F);
+ 43c:	98 b3       	in	r25, 0x18	; 24
+ 43e:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <__DATA_REGION_ORIGIN__+0x2>
+ 442:	90 7f       	andi	r25, 0xF0	; 240
+ 444:	8f 70       	andi	r24, 0x0F	; 15
+ 446:	89 2b       	or	r24, r25
+ 448:	88 bb       	out	0x18, r24	; 24
+						break;
+ 44a:	59 c0       	rjmp	.+178    	; 0x4fe <__LOCK_REGION_LENGTH__+0xfe>
+					case 11: //0x0B
+						//ポートB下位ニブル読み取り
+						cmdresp[2] = PORTB & 0x0F;
+ 44c:	88 b3       	in	r24, 0x18	; 24
+ 44e:	8f 70       	andi	r24, 0x0F	; 15
+ 450:	8b 8b       	std	Y+19, r24	; 0x13
+						break;
+ 452:	b5 c0       	rjmp	.+362    	; 0x5be <__LOCK_REGION_LENGTH__+0x1be>
+					case 12: //0x0C
+						//ポートB下位ニブル方向変更
+						DDRB = (DDRB & 0xF0) | (rxbuf[2] & 0x0F);
+ 454:	97 b3       	in	r25, 0x17	; 23
+ 456:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <__DATA_REGION_ORIGIN__+0x2>
+ 45a:	90 7f       	andi	r25, 0xF0	; 240
+ 45c:	8f 70       	andi	r24, 0x0F	; 15
+ 45e:	89 2b       	or	r24, r25
+ 460:	87 bb       	out	0x17, r24	; 23
+						break;
+ 462:	4d c0       	rjmp	.+154    	; 0x4fe <__LOCK_REGION_LENGTH__+0xfe>
+					case 13: //0x0D
+						//ポートB下位ニブル方向読み取り
+						cmdresp[2] = DDRB & 0x0F;
+ 464:	87 b3       	in	r24, 0x17	; 23
+ 466:	8f 70       	andi	r24, 0x0F	; 15
+ 468:	8b 8b       	std	Y+19, r24	; 0x13
+						break;
+ 46a:	a9 c0       	rjmp	.+338    	; 0x5be <__LOCK_REGION_LENGTH__+0x1be>
+					case 14: //0x0E
+						//ポートB下位ニブル読み取り
+						cmdresp[2] = PINB & 0x0F;
+ 46c:	86 b3       	in	r24, 0x16	; 22
+ 46e:	8f 70       	andi	r24, 0x0F	; 15
+ 470:	8b 8b       	std	Y+19, r24	; 0x13
+						break;
+ 472:	a5 c0       	rjmp	.+330    	; 0x5be <__LOCK_REGION_LENGTH__+0x1be>
+					//このブリッジのバージョン
+					case 20: //0x14
+						cmdresp[2] = VERSION;
+ 474:	f2 e0       	ldi	r31, 0x02	; 2
+ 476:	fb 8b       	std	Y+19, r31	; 0x13
+						break;
+ 478:	a2 c0       	rjmp	.+324    	; 0x5be <__LOCK_REGION_LENGTH__+0x1be>
+					case 21:
+						//SPIディレイ設定
+						spidelay = rxbuf[2];
+ 47a:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <__DATA_REGION_ORIGIN__+0x2>
+ 47e:	80 93 87 00 	sts	0x0087, r24	; 0x800087 <spidelay>
+						break;
+ 482:	9d c0       	rjmp	.+314    	; 0x5be <__LOCK_REGION_LENGTH__+0x1be>
+					case 0xC0:
+					case 0xC1:
+					case 0xC2:
+					case 0xC3:
+						//ブロック転送モード開始
+						blkmodetype = rxbuf[1];
+ 484:	00 91 61 00 	lds	r16, 0x0061	; 0x800061 <__DATA_REGION_ORIGIN__+0x1>
+						if(rxbuf[1] == 0xC0)
+ 488:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <__DATA_REGION_ORIGIN__+0x1>
+ 48c:	80 3c       	cpi	r24, 0xC0	; 192
+ 48e:	11 f4       	brne	.+4      	; 0x494 <__LOCK_REGION_LENGTH__+0x94>
+							pagesize /= 2; //flash書き込みはword単位
+ 490:	76 94       	lsr	r7
+ 492:	67 94       	ror	r6
+						nblks = rxbuf[2];
+ 494:	80 90 62 00 	lds	r8, 0x0062	; 0x800062 <__DATA_REGION_ORIGIN__+0x2>
+ 498:	91 2c       	mov	r9, r1
+						nblks <<= 8;
+ 49a:	98 2c       	mov	r9, r8
+ 49c:	88 24       	eor	r8, r8
+						nblks += rxbuf[3];
+ 49e:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <__DATA_REGION_ORIGIN__+0x3>
+ 4a2:	88 0e       	add	r8, r24
+ 4a4:	91 1c       	adc	r9, r1
+						
+						addr = 0;
+						rxwritepos = 0;
+ 4a6:	10 92 88 00 	sts	0x0088, r1	; 0x800088 <rxwritepos>
+						rxreadpos = 0;
+ 4aa:	10 92 86 00 	sts	0x0086, r1	; 0x800086 <rxreadpos>
+						cntblk = 0;
+						pagepos = 0;
+ 4ae:	e1 2c       	mov	r14, r1
+ 4b0:	f1 2c       	mov	r15, r1
+							pagesize /= 2; //flash書き込みはword単位
+						nblks = rxbuf[2];
+						nblks <<= 8;
+						nblks += rxbuf[3];
+						
+						addr = 0;
+ 4b2:	c1 2c       	mov	r12, r1
+ 4b4:	d1 2c       	mov	r13, r1
+						rxwritepos = 0;
+						rxreadpos = 0;
+						cntblk = 0;
+ 4b6:	a1 2c       	mov	r10, r1
+ 4b8:	b1 2c       	mov	r11, r1
+						pagepos = 0;
+						break;
+ 4ba:	81 c0       	rjmp	.+258    	; 0x5be <__LOCK_REGION_LENGTH__+0x1be>
+					case 0xCE:
+						//ページサイズ設定
+						//rxbuf[2]に上位8bit、[3]に下位8bit
+						pagesize = rxbuf[2];
+ 4bc:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <__DATA_REGION_ORIGIN__+0x2>
+ 4c0:	90 e0       	ldi	r25, 0x00	; 0
+						pagesize <<= 8;
+ 4c2:	98 2f       	mov	r25, r24
+ 4c4:	88 27       	eor	r24, r24
+						pagesize += rxbuf[3];
+ 4c6:	20 91 63 00 	lds	r18, 0x0063	; 0x800063 <__DATA_REGION_ORIGIN__+0x3>
+ 4ca:	3c 01       	movw	r6, r24
+ 4cc:	62 0e       	add	r6, r18
+ 4ce:	71 1c       	adc	r7, r1
+						break;
+ 4d0:	76 c0       	rjmp	.+236    	; 0x5be <__LOCK_REGION_LENGTH__+0x1be>
+					case 0xF1:
+						//ホストからターゲットへソフトUARTでデータ送信
+						if(suatxbit != -1){
+ 4d2:	80 91 84 00 	lds	r24, 0x0084	; 0x800084 <suatxbit>
+ 4d6:	8f 3f       	cpi	r24, 0xFF	; 255
+ 4d8:	11 f0       	breq	.+4      	; 0x4de <__LOCK_REGION_LENGTH__+0xde>
+							//すでに送信中
+							cmdresp[3] = 0xFF;
+ 4da:	4c 8a       	std	Y+20, r4	; 0x14
+ 4dc:	70 c0       	rjmp	.+224    	; 0x5be <__LOCK_REGION_LENGTH__+0x1be>
+						}
+						else{
+							suatxbuf = rxbuf[2];
+ 4de:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <__DATA_REGION_ORIGIN__+0x2>
+ 4e2:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <suatxbuf>
+							//タイマを開始
+							TCNT1 = 0;
+ 4e6:	1d bc       	out	0x2d, r1	; 45
+ 4e8:	1c bc       	out	0x2c, r1	; 44
+							TCCR1B |= 0b00000011;
+ 4ea:	8e b5       	in	r24, 0x2e	; 46
+ 4ec:	83 60       	ori	r24, 0x03	; 3
+ 4ee:	8e bd       	out	0x2e, r24	; 46
+							//スタートビット送出
+							cbi(PORTD,4);
+ 4f0:	94 98       	cbi	0x12, 4	; 18
+							suatxbit = 1;
+ 4f2:	81 e0       	ldi	r24, 0x01	; 1
+ 4f4:	80 93 84 00 	sts	0x0084, r24	; 0x800084 <suatxbit>
+ 4f8:	02 c0       	rjmp	.+4      	; 0x4fe <__LOCK_REGION_LENGTH__+0xfe>
+						}
+						break;
+					case 0xFF:
+						//padding command
+						//no response
+						cmdresp[0] = 0xFE; //0xFEは返信なしの意味
+ 4fa:	29 8a       	std	Y+17, r2	; 0x11
+						break;
+ 4fc:	2c c0       	rjmp	.+88     	; 0x556 <__LOCK_REGION_LENGTH__+0x156>
+				} //if(rxbuf[0]==0xFF)
+				
+				//レスポンス
+				//NULLコマンドとパディングコマンドを除く
+				//実際の送信はメインループ内
+				if(cmdresp[0] != 0xFE){
+ 4fe:	89 89       	ldd	r24, Y+17	; 0x11
+ 500:	8e 3f       	cpi	r24, 0xFE	; 254
+ 502:	49 f1       	breq	.+82     	; 0x556 <__LOCK_REGION_LENGTH__+0x156>
+					txbuf[txwritepos++] = cmdresp[0];
+ 504:	e1 e0       	ldi	r30, 0x01	; 1
+ 506:	f0 e0       	ldi	r31, 0x00	; 0
+ 508:	ec 0f       	add	r30, r28
+ 50a:	fd 1f       	adc	r31, r29
+ 50c:	e1 0f       	add	r30, r17
+ 50e:	f1 1d       	adc	r31, r1
+ 510:	80 83       	st	Z, r24
+					txbuf[txwritepos++] = cmdresp[1];
+ 512:	81 e0       	ldi	r24, 0x01	; 1
+ 514:	81 0f       	add	r24, r17
+ 516:	e1 e0       	ldi	r30, 0x01	; 1
+ 518:	f0 e0       	ldi	r31, 0x00	; 0
+ 51a:	ec 0f       	add	r30, r28
+ 51c:	fd 1f       	adc	r31, r29
+ 51e:	e8 0f       	add	r30, r24
+ 520:	f1 1d       	adc	r31, r1
+ 522:	8a 89       	ldd	r24, Y+18	; 0x12
+ 524:	80 83       	st	Z, r24
+					txbuf[txwritepos++] = cmdresp[2];
+ 526:	82 e0       	ldi	r24, 0x02	; 2
+ 528:	81 0f       	add	r24, r17
+ 52a:	e1 e0       	ldi	r30, 0x01	; 1
+ 52c:	f0 e0       	ldi	r31, 0x00	; 0
+ 52e:	ec 0f       	add	r30, r28
+ 530:	fd 1f       	adc	r31, r29
+ 532:	e8 0f       	add	r30, r24
+ 534:	f1 1d       	adc	r31, r1
+ 536:	8b 89       	ldd	r24, Y+19	; 0x13
+ 538:	80 83       	st	Z, r24
+					txbuf[txwritepos++] = cmdresp[3];
+ 53a:	84 e0       	ldi	r24, 0x04	; 4
+ 53c:	81 0f       	add	r24, r17
+ 53e:	93 e0       	ldi	r25, 0x03	; 3
+ 540:	91 0f       	add	r25, r17
+ 542:	e1 e0       	ldi	r30, 0x01	; 1
+ 544:	f0 e0       	ldi	r31, 0x00	; 0
+ 546:	ec 0f       	add	r30, r28
+ 548:	fd 1f       	adc	r31, r29
+ 54a:	e9 0f       	add	r30, r25
+ 54c:	f1 1d       	adc	r31, r1
+ 54e:	9c 89       	ldd	r25, Y+20	; 0x14
+ 550:	90 83       	st	Z, r25
+					txwritepos &= TXBUFMAXMASK;
+ 552:	18 2f       	mov	r17, r24
+ 554:	1f 70       	andi	r17, 0x0F	; 15
+			} //if(rxpos==4)
+		} // if(!blockmode)
+		
+		//4バイト受信できないときは受信バッファをリセットする
+		//ウォッチドッグタイマの代わり
+		cnttimeout--;
+ 556:	80 91 82 00 	lds	r24, 0x0082	; 0x800082 <cnttimeout>
+ 55a:	90 91 83 00 	lds	r25, 0x0083	; 0x800083 <cnttimeout+0x1>
+ 55e:	01 97       	sbiw	r24, 0x01	; 1
+ 560:	90 93 83 00 	sts	0x0083, r25	; 0x800083 <cnttimeout+0x1>
+ 564:	80 93 82 00 	sts	0x0082, r24	; 0x800082 <cnttimeout>
+		if(cnttimeout==0){
+ 568:	80 91 82 00 	lds	r24, 0x0082	; 0x800082 <cnttimeout>
+ 56c:	90 91 83 00 	lds	r25, 0x0083	; 0x800083 <cnttimeout+0x1>
+ 570:	89 2b       	or	r24, r25
+ 572:	09 f0       	breq	.+2      	; 0x576 <__LOCK_REGION_LENGTH__+0x176>
+ 574:	c7 cd       	rjmp	.-1138   	; 0x104 <__stack+0x25>
+			rxwritepos = 0;
+ 576:	10 92 88 00 	sts	0x0088, r1	; 0x800088 <rxwritepos>
+			rxreadpos = 0;
+ 57a:	10 92 86 00 	sts	0x0086, r1	; 0x800086 <rxreadpos>
+			blkmodetype = 0;
+ 57e:	00 e0       	ldi	r16, 0x00	; 0
+ 580:	c1 cd       	rjmp	.-1150   	; 0x104 <__stack+0x25>
+					//ページ設定
+					if(blkmodetype==0xC0)	//FLASHページ設定
+						spibuf[0] = (rxreadpos&1)==0? 0x40: 0x48;
+					else if(blkmodetype==0xC2)	//EEPROMページ設定
+						spibuf[0] = 0xC1;
+					spibuf[1] = pagepos>>8;
+ 582:	fe 8a       	std	Y+22, r15	; 0x16
+					spibuf[2] = pagepos&0xFF;
+ 584:	ef 8a       	std	Y+23, r14	; 0x17
+					spibuf[3] = rxbuf[rxreadpos]; //DBGUDR; //UDR;
+ 586:	e0 91 86 00 	lds	r30, 0x0086	; 0x800086 <rxreadpos>
+ 58a:	f0 e0       	ldi	r31, 0x00	; 0
+ 58c:	e0 5a       	subi	r30, 0xA0	; 160
+ 58e:	ff 4f       	sbci	r31, 0xFF	; 255
+ 590:	80 81       	ld	r24, Z
+ 592:	88 8f       	std	Y+24, r24	; 0x18
+					//SPI
+					spi_exchange(spibuf, cmdresp);
+ 594:	be 01       	movw	r22, r28
+ 596:	6f 5e       	subi	r22, 0xEF	; 239
+ 598:	7f 4f       	sbci	r23, 0xFF	; 255
+ 59a:	ce 01       	movw	r24, r28
+ 59c:	45 96       	adiw	r24, 0x15	; 21
+ 59e:	a0 d0       	rcall	.+320    	; 0x6e0 <spi_exchange>
+					//ページ内位置を進める
+					if( (blkmodetype==0xC0 && (rxreadpos&1)==1) || blkmodetype==0xC2){
+						pagepos++;
+					}
+					//ページ端なら書き込み
+					if(pagepos == pagesize){
+ 5a0:	6e 14       	cp	r6, r14
+ 5a2:	7f 04       	cpc	r7, r15
+ 5a4:	09 f0       	breq	.+2      	; 0x5a8 <__LOCK_REGION_LENGTH__+0x1a8>
+ 5a6:	53 ce       	rjmp	.-858    	; 0x24e <__stack+0x16f>
+ 5a8:	3f ce       	rjmp	.-898    	; 0x228 <__stack+0x149>
+				if(txwritepos == txreadpos){ //コマンドレスポンスを優先する(送信バッファが空になってから読み込み開始)
+					if(blkmodetype==0xC1)
+						spibuf[0] = (rxreadpos&1)==0? 0x20: 0x28; //rxreadposはインデックス代わり
+					else if(blkmodetype==0xC3)
+						spibuf[0] = 0xA0;
+					spibuf[1] = addr>>8;	//アドレス上位
+ 5aa:	de 8a       	std	Y+22, r13	; 0x16
+					spibuf[2] = addr&0xFF;	//アドレス下位
+ 5ac:	cf 8a       	std	Y+23, r12	; 0x17
+					spibuf[3] = 0;
+ 5ae:	18 8e       	std	Y+24, r1	; 0x18
+						
+					//SPI
+					spi_exchange(spibuf, cmdresp);
+ 5b0:	be 01       	movw	r22, r28
+ 5b2:	6f 5e       	subi	r22, 0xEF	; 239
+ 5b4:	7f 4f       	sbci	r23, 0xFF	; 255
+ 5b6:	ce 01       	movw	r24, r28
+ 5b8:	45 96       	adiw	r24, 0x15	; 21
+ 5ba:	92 d0       	rcall	.+292    	; 0x6e0 <spi_exchange>
+ 5bc:	b4 ce       	rjmp	.-664    	; 0x326 <__stack+0x247>
+				} //if(rxbuf[0]==0xFF)
+				
+				//レスポンス
+				//NULLコマンドとパディングコマンドを除く
+				//実際の送信はメインループ内
+				if(cmdresp[0] != 0xFE){
+ 5be:	89 89       	ldd	r24, Y+17	; 0x11
+ 5c0:	a1 cf       	rjmp	.-190    	; 0x504 <__LOCK_REGION_LENGTH__+0x104>
+					//ページ内位置を進める
+					if( (blkmodetype==0xC0 && (rxreadpos&1)==1) || blkmodetype==0xC2){
+						pagepos++;
+					}
+					//ページ端なら書き込み
+					if(pagepos == pagesize){
+ 5c2:	6e 14       	cp	r6, r14
+ 5c4:	7f 04       	cpc	r7, r15
+ 5c6:	09 f0       	breq	.+2      	; 0x5ca <__LOCK_REGION_LENGTH__+0x1ca>
+ 5c8:	42 ce       	rjmp	.-892    	; 0x24e <__stack+0x16f>
+ 5ca:	27 ce       	rjmp	.-946    	; 0x21a <__stack+0x13b>

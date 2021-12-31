@@ -34,7 +34,7 @@ public:
     bool escapeRTS(bool stat);
 
     bool send(unsigned char *buf, int len);
-    int receive(unsigned char *buf, int reqlen);
+    int receive(unsigned char *buf, int reqlen, int retrycount=10);
     bool exchangeSPI(unsigned char *in, int a, int b, int c, int d);
 	void setSPIDelay(int delay){spidelay = delay;}
 

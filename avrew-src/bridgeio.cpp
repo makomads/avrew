@@ -248,10 +248,9 @@ bool BridgeIO::send(unsigned char *buf, int outlen)
 
 unsigned long g_eltime;
 
-int BridgeIO::receive(unsigned char *buf, int reqlen)
+int BridgeIO::receive(unsigned char *buf, int reqlen, int retrycount)
 {
     DWORD pos=0, readlen=0;
-	int retrycount=10;
 
     while(pos!=reqlen && retrycount!=0){
 		DWORD start = timeGetTime();
